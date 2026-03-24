@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Playfair+Display:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Playfair Display", serif;
+
+  /* Colors */
+  --color-primary: #2a5c2a;
+  --color-primary-light: #3d7a3d;
+  --color-accent: #8ab83a;
+  --color-bg-2: #f2f0eb;
+  --color-border: #e5e3de;
+
+  /* Border radius */
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+
+  /* Animations */
+  --animate-marquee: marquee 20s linear infinite;
+  --animate-marquee-slow: marquee 28s linear infinite;
+  --animate-fade-up: fadeUp 0.35s ease forwards;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  .nav-underline {
+    position: relative;
+  }
+  .nav-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background: var(--color-primary);
+    transition: width 0.25s ease;
+  }
+  .nav-underline:hover::after {
+    width: 100%;
+  }
+
+  .footer-link-line {
+    position: relative;
+    width: fit-content;
+  }
+  .footer-link-line::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-accent);
+    transition: width 0.25s ease;
+  }
+  .footer-link-line:hover::after {
+    width: 100%;
+  }
+}
