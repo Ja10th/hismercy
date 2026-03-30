@@ -5,7 +5,7 @@ export default function Brands() {
   const doubled = [...brandLogos, ...brandLogos];
 
   return (
-    <section className="py-16 bg-[#f2f0eb] overflow-hidden">
+    <section className="py-8 md:py-16 bg-[#f2f0eb] overflow-hidden">
       <p className="text-center text-[13px] font-medium text-neutral-400 uppercase tracking-widest mb-8">
         Investor &amp; Partners
       </p>
