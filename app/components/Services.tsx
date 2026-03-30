@@ -8,41 +8,49 @@ export default function Services() {
   const [active, setActive] = useState(0);
   const current = services[active];
 
-  const prev = () =>
-    setActive((p) => (p - 1 + services.length) % services.length);
-
-  const next = () =>
-    setActive((p) => (p + 1) % services.length);
+  const prev = () => setActive((p) => (p - 1 + services.length) % services.length);
+  const next = () => setActive((p) => (p + 1) % services.length);
 
   return (
     <section className="relative min-h-[85vh] flex items-end overflow-hidden bg-[#f2f0eb]">
-
-      {/* Background Image */}
-      <Image
+      {/* Mobile pan image */}
+      <div
         key={active}
-        src={current.image}
-        alt={current.heading}
-        fill
-        className="object-cover z-0"
-        priority
+        className="absolute inset-0 md:hidden animate-pan-mobile"
+        style={{
+          backgroundImage: `url(${current.image})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "auto 100%",
+          backgroundPosition: "0% center",
+        }}
       />
 
-      {/* <div className="pointer-events-none absolute top-0 left-0 w-full h-40 z-10 bg-linear-to-b from-white to-transparent" /> */}
+      {/* Desktop background image */}
+      <div className="absolute inset-0 hidden md:block">
+        <Image
+          key={active}
+          src={current.image}
+          alt={current.heading}
+          fill
+          priority
+          className="object-cover"
+        />
+      </div>
 
-      {/* 🔥 BOTTOM FADE (image fades into dark area) */}
+      {/* Bottom fade */}
       <div className="pointer-events-none absolute bottom-0 left-0 w-full h-96 z-10 bg-gradient-to-t from-black via-black/70 to-transparent" />
 
-      {/* Dark overlay (for readability) */}
+      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/30 z-10" />
 
       {/* Content */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-8 pb-20">
         <div className="max-w-xl flex flex-col gap-5">
-          <h3 className=" text-3xl md:text-4xl lg:text-6xl font-semibold text-white leading-[1.2]">
+          <h3 className="text-3xl md:text-4xl lg:text-6xl font-semibold text-white leading-[1.2]">
             {current.heading}
           </h3>
 
-          <p className="text-white/80 text-base lg:text-[20px]  leading-[1.75]">
+          <p className="text-white/80 text-base lg:text-[20px] leading-[1.75]">
             {current.paragraph}
           </p>
 
@@ -61,9 +69,7 @@ export default function Services() {
                 {String(active + 1).padStart(2, "0")}
               </span>
               <span className="opacity-50 mx-0.5">/</span>
-              <span>
-                {String(services.length).padStart(2, "0")}
-              </span>
+              <span>{String(services.length).padStart(2, "0")}</span>
             </div>
 
             <button
@@ -90,6 +96,22 @@ export default function Services() {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes panMobile {
+          from {
+            background-position: 0% center;
+          }
+          to {
+            background-position: 100% center;
+          }
+        }
+
+        .animate-pan-mobile {
+          animation: panMobile 4s linear forwards;
+          will-change: background-position;
+        }
+      `}</style>
     </section>
   );
 }

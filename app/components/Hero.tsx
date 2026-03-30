@@ -6,16 +6,18 @@ export default function Hero() {
   return (
     <section className="relative min-h-[80vh] flex items-end overflow-hidden pt-28 md:pt-18">
       {/* Background video */}
-      <video
+      {/* <video
         className="absolute inset-0 w-full h-full object-center object-cover z-0"
         autoPlay
         loop
         muted
         playsInline
         poster={assets.heroPoster}
+
       >
         <source src={assets.heroVideo} type="video/mp4" />
-      </video>
+      </video> */}
+      <img src="/hero.jpg" alt="hero" className="absolute inset-0 w-full h-full object-center object-cover z-0"/>
 
       {/* Content */}
       <div className="relative z-20 w-full max-w-8xl mx-auto px-5 md:px-40 pb-20">
@@ -45,7 +47,7 @@ export default function Hero() {
             </div>
             {/* Review card */}
             {/* 3. Horizontal compact card */}
-<div className="bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-5 flex items-center gap-5">
+<div className="hidden md:flex bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-5  items-center gap-5">
   <div className="shrink-0">
     <div className="font-serif text-[2.4rem] font-medium text-white leading-none">
       4.9
