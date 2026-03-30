@@ -199,7 +199,7 @@ export const testimonials: Testimonial[] = [
   {
     name: "Kathryn Murphy",
     designation: "Marketing Coordinator",
-    text: "We partnered with AgriFarm for smart consultancy and crop planning. They tested our soil and guided us on the best crop varieties.",
+    text: "We partnered with Mercy Agricultural Services for smart consultancy and crop planning. They tested our soil and guided us on the best crop varieties.",
     rating: "4.9",
     image: `${CDN}/68c2d45f78af5993ae49b3ba_Frame%202085666691%20(3).webp`,
   },
