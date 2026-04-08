@@ -42,7 +42,7 @@ export default function Footer() {
             {/* Contact button */}
             <Link
               href="/contact-us"
-              className="flex items-center gap-2.5 bg-accent text-neutral-900 px-7 py-3.5 rounded-full font-bold text-[14px] tracking-wide hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
+              className="flex items-center gap-2.5 bg-green-600 text-white px-7 py-3.5 rounded-full font-bold text-[14px] tracking-wide hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
             >
               <Image src={assets.footerButtonIcon} alt="" width={18} height={18} />
               CONTACT US

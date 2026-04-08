@@ -47,7 +47,7 @@ export default function Hero() {
             </div>
             {/* Review card */}
             {/* 3. Horizontal compact card */}
-<div className="hidden md:flex bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-5  items-center gap-5">
+<div className="hidden  bg-white/12 backdrop-blur-md border border-white/20 rounded-2xl p-5  items-center gap-5">
   <div className="shrink-0">
     <div className="font-serif text-[2.4rem] font-medium text-white leading-none">
       4.9
