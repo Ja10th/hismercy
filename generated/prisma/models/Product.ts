@@ -648,6 +648,7 @@ export type ProductCreateOrConnectWithoutBrandInput = {
 
 export type ProductCreateManyBrandInputEnvelope = {
   data: Prisma.ProductCreateManyBrandInput | Prisma.ProductCreateManyBrandInput[]
+  skipDuplicates?: boolean
 }
 
 export type ProductUpsertWithWhereUniqueWithoutBrandInput = {
@@ -1617,6 +1618,7 @@ export type ProductCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data used to create many Products.
    */
   data: Prisma.ProductCreateManyInput | Prisma.ProductCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -1635,6 +1637,7 @@ export type ProductCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensi
    * The data used to create many Products.
    */
   data: Prisma.ProductCreateManyInput | Prisma.ProductCreateManyInput[]
+  skipDuplicates?: boolean
   /**
    * Choose, which related nodes to fetch as well
    */

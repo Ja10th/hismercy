@@ -17,10 +17,10 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.6.0",
-  "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
-  "activeProvider": "sqlite",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Brand {\n  id        String   @id @default(cuid())\n  name      String   @unique\n  slug      String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  products Product[]\n}\n\nmodel Product {\n  id            String  @id @default(cuid())\n  name          String\n  slug          String  @unique\n  price         Int\n  description   String?\n  inStock       Boolean @default(true)\n  stockCount    Int     @default(0)\n  featured      Boolean @default(false)\n  featuredOrder Int     @default(999)\n\n  brandId String?\n  brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)\n\n  images ProductImage[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel ProductImage {\n  id        String  @id @default(cuid())\n  url       String\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now())\n}\n\nmodel Order {\n  id             String   @id @default(cuid())\n  orderCode      String   @unique\n  fullName       String\n  email          String\n  phone          String\n  street         String\n  city           String\n  state          String\n  landmark       String?\n  deliveryMethod String\n  subtotal       Int\n  deliveryFee    Int\n  total          Int\n  status         String   @default(\"pending\")\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  items OrderItem[]\n\n  @@index([email])\n  @@index([createdAt])\n}\n\nmodel OrderItem {\n  id      String @id @default(cuid())\n  orderId String\n  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)\n\n  productId String\n  name      String\n  price     Int\n  qty       Int\n  image     String\n\n  createdAt DateTime @default(now())\n}\n",
+  "clientVersion": "7.8.0",
+  "engineVersion": "3c6e192761c0362d496ed980de936e2f3cebcd3a",
+  "activeProvider": "postgresql",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Brand {\n  id        String   @id @default(cuid())\n  name      String   @unique\n  slug      String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  products Product[]\n}\n\nmodel Product {\n  id            String  @id @default(cuid())\n  name          String\n  slug          String  @unique\n  price         Int\n  description   String?\n  inStock       Boolean @default(true)\n  stockCount    Int     @default(0)\n  featured      Boolean @default(false)\n  featuredOrder Int     @default(999)\n\n  brandId String?\n  brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)\n\n  images ProductImage[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel ProductImage {\n  id        String  @id @default(cuid())\n  url       String\n  productId String\n  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now())\n}\n\nmodel Order {\n  id             String   @id @default(cuid())\n  orderCode      String   @unique\n  fullName       String\n  email          String\n  phone          String\n  street         String\n  city           String\n  state          String\n  landmark       String?\n  deliveryMethod String\n  subtotal       Int\n  deliveryFee    Int\n  total          Int\n  status         String   @default(\"pending\")\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  items OrderItem[]\n\n  @@index([email])\n  @@index([createdAt])\n}\n\nmodel OrderItem {\n  id      String @id @default(cuid())\n  orderId String\n  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)\n\n  productId String\n  name      String\n  price     Int\n  qty       Int\n  image     String\n\n  createdAt DateTime @default(now())\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -45,10 +45,10 @@ async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Modul
 }
 
 config.compilerWasm = {
-  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.mjs"),
+  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
 
   getQueryCompilerWasmModule: async () => {
-    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.wasm-base64.mjs")
+    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs")
     return await decodeBase64AsWasm(wasm)
   },
 
@@ -180,7 +180,7 @@ export interface PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => runtime.Types.Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): runtime.Types.Utils.JsPromise<R>
 

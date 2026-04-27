@@ -1,0 +1,302 @@
+{
+  "brands": [
+    {
+      "id": "cmndatza50000gxmmhrt1u8yc",
+      "name": "New Hope",
+      "slug": "new-hope",
+      "createdAt": "2026-03-30T14:44:19.037Z",
+      "updatedAt": "2026-03-30T14:44:19.037Z"
+    },
+    {
+      "id": "cmndau52b0001gxmmkwu31ubu",
+      "name": "Top Feed",
+      "slug": "top-feed",
+      "createdAt": "2026-03-30T14:44:26.531Z",
+      "updatedAt": "2026-03-30T14:44:26.531Z"
+    },
+    {
+      "id": "cmnydf30k0000vhmmpm3oaj03",
+      "name": "Hendrix",
+      "slug": "hendrix",
+      "createdAt": "2026-04-14T08:39:52.580Z",
+      "updatedAt": "2026-04-14T08:39:52.580Z"
+    },
+    {
+      "id": "cmnyrx3pc000049mm3vqou4y4",
+      "name": "Happy Chicken",
+      "slug": "happy-chicken",
+      "createdAt": "2026-04-14T15:25:47.904Z",
+      "updatedAt": "2026-04-14T15:25:47.904Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "cmnpe9rho0000r1mm65vfr9y2",
+      "name": "Grower Feed 322T",
+      "slug": "new-hope-grower-feed-322t",
+      "price": 1600000,
+      "description": "New Hope Grower Crumpellet 322T is a premium-quality feed formulated to support steady growth and optimal development of broiler birds during the grower phase. Its crumpellet form improves intake and reduces feed wastage, ensuring birds receive consistent, balanced nutrition for efficient weight gain and strong body formation.\r\n\r\nFortified with essential proteins, vitamins, and minerals, this feed enhances feed conversion, supports immunity, and prepares birds for the finishing stage. It is suitable for broilers from approximately 4 weeks of age until they transition to finisher feed, delivering reliable performance for both small-scale and commercial poultry farmers.",
+      "inStock": true,
+      "stockCount": 20,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-08T01:53:48.398Z",
+      "updatedAt": "2026-04-16T09:53:42.169Z"
+    },
+    {
+      "id": "cmnpgcc6i0000x0mmolue43oi",
+      "name": "Layer Mash",
+      "slug": "top-feed-layer-mash",
+      "price": 1525000,
+      "description": "The Topfeed for Layers products are nutritionally complete poultry feeds in ground form. The layer mash is aimed at achieving an optimum flock uniformity and improved egg production in laying flock. Topfeed variants are made from best in class milling equipment, produced using high-quality ingredients as well as an excellent balance of essential amino acids.",
+      "inStock": true,
+      "stockCount": 50,
+      "featured": true,
+      "featuredOrder": 1,
+      "brandId": "cmndau52b0001gxmmkwu31ubu",
+      "createdAt": "2026-04-08T02:51:47.754Z",
+      "updatedAt": "2026-04-21T02:01:29.422Z"
+    },
+    {
+      "id": "cmnydgd2o0001vhmmjhneie96",
+      "name": "Broiler Starter",
+      "slug": "hendrix-broiler-starter",
+      "price": 2900000,
+      "description": "Hendrix Broiler Starter Feed | 25kg is a premium, nutritionally balanced poultry feed formulated to support rapid early growth, strong immunity, and efficient feed conversion in broiler chicks from day one to about 14 days of age. Enriched with high-quality protein, essential amino acids, vitamins, minerals, and digestive enhancers, Hendrix Broiler Starter Feed promotes uniform flock development and lays a solid foundation for improved performance throughout the production cycle. Ideal for commercial and small-scale poultry farmers, Hendrix Broiler Starter Feed helps maximize growth potential and profitability from the very start.",
+      "inStock": true,
+      "stockCount": 200,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmnydf30k0000vhmmpm3oaj03",
+      "createdAt": "2026-04-14T08:40:52.272Z",
+      "updatedAt": "2026-04-21T01:28:17.894Z"
+    },
+    {
+      "id": "cmnys0rtg000149mmhtuwyo2u",
+      "name": "Broiler Pre-Starter",
+      "slug": "happy-chicken-broiler-pre-starter",
+      "price": 2400000,
+      "description": "Happy Chicken | 25kg is a premium, nutritionally balanced poultry feed formulated to support rapid early growth, strong immunity, and efficient feed conversion in broiler chicks from day one to about 14 days of age. Enriched with high-quality protein, essential amino acids, vitamins, minerals, and digestive enhancers, Pre Broiler Starter Feed promotes uniform flock development and lays a solid foundation for improved performance throughout the production cycle. Ideal for commercial and small-scale poultry farmers, Pre Broiler Starter Feed helps maximize growth potential and profitability from the very start.",
+      "inStock": true,
+      "stockCount": 20,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmnyrx3pc000049mm3vqou4y4",
+      "createdAt": "2026-04-14T15:28:39.124Z",
+      "updatedAt": "2026-04-14T15:49:32.648Z"
+    },
+    {
+      "id": "cmo1aohby000419mmy6co0azt",
+      "name": "Broiler Feed 510",
+      "slug": "new-hope-broiler-feed-510",
+      "price": 2220000,
+      "description": "New Hope Broiler Extra Starter 510 is a high-quality, nutritionally balanced feed specially formulated for broiler chicks from day-old up to 3–4 weeks. It is designed to support rapid early growth, strong immunity, and optimal development during the critical starter phase.\r\n\r\nEnriched with essential proteins, vitamins, and minerals, this feed promotes excellent weight gain, improved feed conversion, and overall bird health. Its fine texture ensures easy consumption and digestion, making it ideal for young chicks.",
+      "inStock": true,
+      "stockCount": 50,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-16T09:46:30.718Z",
+      "updatedAt": "2026-04-16T09:46:52.400Z"
+    },
+    {
+      "id": "cmo1b1cjt000c19mmantrf54d",
+      "name": "Broiler Finisher 512",
+      "slug": "new-hope-broiler-finisher-512",
+      "price": 2190000,
+      "description": "New Hope Broiler Finisher 512 is a high-performance feed specially formulated for broiler birds in the final stage of growth. It provides a well-balanced blend of energy, proteins, vitamins, and minerals to support rapid weight gain, efficient feed conversion, and optimal finishing before market.\r\n\r\nDesigned to enhance carcass quality and overall bird health, this feed ensures broilers reach their target weight on time with strong muscle development. It is suitable for birds from about 5 weeks of age until market, making it ideal for farmers aiming for maximum productivity and profitability.",
+      "inStock": true,
+      "stockCount": 50,
+      "featured": true,
+      "featuredOrder": 2,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-16T09:56:31.050Z",
+      "updatedAt": "2026-04-21T02:01:41.780Z"
+    },
+    {
+      "id": "cmo1b8lrh000e19mm97he1p4a",
+      "name": "Broiler Starter 511",
+      "slug": "new-hope-broiler-starter-511",
+      "price": 2200000,
+      "description": "New Hope Broiler Starter 511 is a nutritionally balanced feed designed for broiler chicks at the early stage of growth. It provides the right combination of high-quality proteins, energy, vitamins, and minerals to support rapid development, strong immunity, and a healthy start during the critical first weeks.\r\n\r\nWith its fine, easy-to-consume texture, this feed promotes better digestion and efficient nutrient absorption, helping chicks achieve uniform growth and improved feed conversion. It is ideal for broilers from day-old up to 3–4 weeks, ensuring a solid foundation for the grower and finisher phases.",
+      "inStock": true,
+      "stockCount": 50,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-16T10:02:09.581Z",
+      "updatedAt": "2026-04-16T10:02:09.581Z"
+    },
+    {
+      "id": "cmo3n7l4b00002pmmbacstnhc",
+      "name": "Broiler Finisher 522",
+      "slug": "new-hope-broiler-finisher-522",
+      "price": 1760000,
+      "description": "New Hope Broiler Finisher 522 is a high-quality feed formulated for broilers in the final stage of growth, delivering the energy and nutrients needed for rapid weight gain and efficient finishing. It supports strong muscle development, improved feed conversion, and helps birds reach market weight on schedule.\r\n\r\nEnriched with essential vitamins and minerals, this feed promotes overall bird health and enhances carcass quality. Suitable for broilers from around 5 weeks to market age, it is ideal for farmers seeking consistent performance and maximum profitability.",
+      "inStock": true,
+      "stockCount": 200,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-18T01:12:49.835Z",
+      "updatedAt": "2026-04-18T01:12:49.835Z"
+    },
+    {
+      "id": "cmo3nbeo400022pmmi1wepcqf",
+      "name": "Layer Mash 324h",
+      "slug": "new-hope-layer-mash-324h",
+      "price": 1700000,
+      "description": "New Hope Layer Mash 324H is a premium-quality feed formulated to support laying birds for consistent egg production and overall health. It provides a balanced blend of proteins, energy, vitamins, and minerals to promote high egg yield, strong eggshell quality, and sustained performance throughout the laying cycle.\r\n\r\nEnriched with essential nutrients, this mash supports good digestion, improves feed efficiency, and helps maintain the health and vitality of layers. It is suitable for birds at the laying stage, making it ideal for farmers aiming for maximum egg production and profitability.",
+      "inStock": true,
+      "stockCount": 300,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndatza50000gxmmhrt1u8yc",
+      "createdAt": "2026-04-18T01:15:48.100Z",
+      "updatedAt": "2026-04-18T01:15:48.100Z"
+    },
+    {
+      "id": "cmo3nfbbd00042pmmqssu9pb6",
+      "name": "Grower",
+      "slug": "top-feed-grower",
+      "price": 1550000,
+      "description": "Top Feed Grower Mash is a high-quality feed specially formulated to support the steady growth and development of poultry during the grower stage. It provides a balanced mix of essential nutrients, including proteins, energy, vitamins, and minerals, to promote strong body structure and optimal weight gain.\r\n\r\nDesigned for easy digestion and efficient nutrient absorption, this feed helps improve feed conversion and overall bird health. It is ideal for growing birds transitioning from the starter phase, ensuring they develop properly and are well-prepared for the finishing or laying stage.",
+      "inStock": true,
+      "stockCount": 200,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndau52b0001gxmmkwu31ubu",
+      "createdAt": "2026-04-18T01:18:50.377Z",
+      "updatedAt": "2026-04-18T01:18:50.377Z"
+    },
+    {
+      "id": "cmo3nhfq600062pmmyyag1cs5",
+      "name": "Broiler Starter",
+      "slug": "top-feed-broiler-starter",
+      "price": 1800000,
+      "description": "Top Feed Broiler Starter is a premium-quality feed formulated to give broiler chicks a strong and healthy start during their early stage of growth. It contains a balanced blend of high-quality proteins, energy, vitamins, and minerals to support rapid development, strong immunity, and early weight gain.\r\n\r\nWith its fine texture and high digestibility, this feed ensures easy intake and efficient nutrient absorption, promoting uniform growth and improved feed conversion. It is ideal for broiler chicks from day-old up to 3–4 weeks, laying a solid foundation for the grower and finisher phases.",
+      "inStock": true,
+      "stockCount": 200,
+      "featured": true,
+      "featuredOrder": 3,
+      "brandId": "cmndau52b0001gxmmkwu31ubu",
+      "createdAt": "2026-04-18T01:20:29.406Z",
+      "updatedAt": "2026-04-21T02:01:44.837Z"
+    },
+    {
+      "id": "cmo3nn5tz00082pmmocvbz0pv",
+      "name": "Broiler Finisher",
+      "slug": "top-feed-broiler-finisher",
+      "price": 1755000,
+      "description": "Top Feed Broiler Finisher is a high-quality feed designed for broilers in the final stage of growth, providing the nutrients needed for rapid weight gain and efficient finishing. It contains a well-balanced mix of energy, proteins, vitamins, and minerals to support strong muscle development and help birds reach market weight on time.\r\n\r\nFormulated for optimal feed conversion and overall bird health, this feed also contributes to improved carcass quality and performance. It is suitable for broilers from about 5 weeks to market age, making it ideal for farmers focused on maximum productivity and profitability.",
+      "inStock": true,
+      "stockCount": 200,
+      "featured": false,
+      "featuredOrder": 999,
+      "brandId": "cmndau52b0001gxmmkwu31ubu",
+      "createdAt": "2026-04-18T01:24:56.519Z",
+      "updatedAt": "2026-04-18T01:24:56.519Z"
+    }
+  ],
+  "productImages": [
+    {
+      "id": "cmnysrn1t000m49mmp4fmoxsb",
+      "url": "/uploads/1c347812-4cb2-42be-93b1-d79df306c634.png",
+      "productId": "cmnys0rtg000149mmhtuwyo2u",
+      "createdAt": "2026-04-14T15:49:32.657Z"
+    },
+    {
+      "id": "cmnysrn1v000n49mmuf029dan",
+      "url": "/uploads/b15a3974-14da-49ec-8db6-c64b7edbd664.png",
+      "productId": "cmnys0rtg000149mmhtuwyo2u",
+      "createdAt": "2026-04-14T15:49:32.659Z"
+    },
+    {
+      "id": "cmo1aoy2b000619mmcqijw79u",
+      "url": "/uploads/28b77e3f-ce85-4ac3-b755-6b05c332e086.png",
+      "productId": "cmo1aohby000419mmy6co0azt",
+      "createdAt": "2026-04-16T09:46:52.403Z"
+    },
+    {
+      "id": "cmo1axq8v000a19mmt1e0g8yd",
+      "url": "/uploads/98116992-c4a4-4af6-8588-d201e954aeec.png",
+      "productId": "cmnpe9rho0000r1mm65vfr9y2",
+      "createdAt": "2026-04-16T09:53:42.175Z"
+    },
+    {
+      "id": "cmo1axq8w000b19mmhdvuimfo",
+      "url": "/uploads/1fe55634-fc11-4095-9e66-ec6cef8f2e59.png",
+      "productId": "cmnpe9rho0000r1mm65vfr9y2",
+      "createdAt": "2026-04-16T09:53:42.176Z"
+    },
+    {
+      "id": "cmo1b8lro000f19mmlzs8sqen",
+      "url": "/uploads/92901f0f-c77b-4f18-ba61-f95579c2159e.png",
+      "productId": "cmo1b8lrh000e19mm97he1p4a",
+      "createdAt": "2026-04-16T10:02:09.588Z"
+    },
+    {
+      "id": "cmo3n7l4k00012pmma0lnwnr3",
+      "url": "/uploads/b799a06a-9d79-4e1b-aed4-f068ac6d3efb.png",
+      "productId": "cmo3n7l4b00002pmmbacstnhc",
+      "createdAt": "2026-04-18T01:12:49.844Z"
+    },
+    {
+      "id": "cmo3nbeo700032pmm69lay9us",
+      "url": "/uploads/0575b37c-a288-4536-9a9d-03c72436e52d.png",
+      "productId": "cmo3nbeo400022pmmi1wepcqf",
+      "createdAt": "2026-04-18T01:15:48.103Z"
+    },
+    {
+      "id": "cmo3nfbbi00052pmm4wx8ikp1",
+      "url": "/uploads/26718004-6277-4953-91c6-fbb5aa7eef24.png",
+      "productId": "cmo3nfbbd00042pmmqssu9pb6",
+      "createdAt": "2026-04-18T01:18:50.382Z"
+    },
+    {
+      "id": "cmo3nn5u700092pmmlqmdb37i",
+      "url": "/uploads/f1b2d3e3-76fe-4672-a009-51145faf6636.png",
+      "productId": "cmo3nn5tz00082pmmocvbz0pv",
+      "createdAt": "2026-04-18T01:24:56.527Z"
+    },
+    {
+      "id": "cmo7xvbgn0000vlmmhjdkhdt2",
+      "url": "/uploads/cf231396-2df4-4079-8a5a-82b0af9fe4a0.png",
+      "productId": "cmo3nhfq600062pmmyyag1cs5",
+      "createdAt": "2026-04-21T01:22:17.927Z"
+    },
+    {
+      "id": "cmo7xz9t20001vlmmdqpyaxp4",
+      "url": "/uploads/1b8174d2-2a70-4454-b974-5725d83895eb.png",
+      "productId": "cmo1b1cjt000c19mmantrf54d",
+      "createdAt": "2026-04-21T01:25:22.406Z"
+    },
+    {
+      "id": "cmo7xzeo30002vlmmbeutd9rl",
+      "url": "/uploads/4db898c2-f182-40ac-884a-46b2aa2d92cd.png",
+      "productId": "cmnpgcc6i0000x0mmolue43oi",
+      "createdAt": "2026-04-21T01:25:28.707Z"
+    },
+    {
+      "id": "cmo7xzeo30003vlmmzs3rblin",
+      "url": "/uploads/2b949d43-7755-4d53-9384-52718773a38a.png",
+      "productId": "cmnpgcc6i0000x0mmolue43oi",
+      "createdAt": "2026-04-21T01:25:28.707Z"
+    },
+    {
+      "id": "cmo7xzjg20004vlmm1ulcw1ix",
+      "url": "/uploads/f1b69ec1-e512-498e-a8e2-463bf75983dd.png",
+      "productId": "cmnydgd2o0001vhmmjhneie96",
+      "createdAt": "2026-04-21T01:25:34.898Z"
+    },
+    {
+      "id": "cmo7xzjg30005vlmmegwimoqu",
+      "url": "/uploads/ab7d9af3-9384-4d28-b783-ceefc27a5f3e.png",
+      "productId": "cmnydgd2o0001vhmmjhneie96",
+      "createdAt": "2026-04-21T01:25:34.899Z"
+    }
+  ],
+  "orders": [],
+  "orderItems": []
+}
