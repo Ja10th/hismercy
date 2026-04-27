@@ -1,10 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ShopProducts from "../components/ShopProducts";
-import { Search, SlidersHorizontal, X, Package, ArrowUpDown } from "lucide-react";
+import { Search, X, Package, ArrowUpDown } from "lucide-react";
 
 type ShopSearchParams = {
   q?: string;
@@ -85,29 +84,29 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const selectedBrand = brands.find((b) => b.id === brand);
 
   const products = await prisma.product.findMany({
-    where: {
-      ...(brand ? { brandId: brand } : {}),
-      ...(q
-        ? {
-            OR: [
-              { name: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
-              { slug: { contains: q, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    include: {
-      brand: true,
-      images: true,
-    },
-    orderBy:
-      sort === "price_asc"
-        ? { price: "asc" }
-        : sort === "price_desc"
-          ? { price: "desc" }
-          : [{ featured: "desc" }, { featuredOrder: "asc" }, { createdAt: "desc" }],
-  });
+  where: {
+    ...(brand ? { brandId: brand } : {}),
+    ...(q
+      ? {
+          OR: [
+            { name: { contains: q } },
+            { description: { contains: q } },
+            { slug: { contains: q } },
+          ],
+        }
+      : {}),
+  },
+  include: {
+    brand: true,
+    images: true,
+  },
+  orderBy:
+    sort === "price_asc"
+      ? { price: "asc" }
+      : sort === "price_desc"
+        ? { price: "desc" }
+        : [{ featured: "desc" }, { featuredOrder: "asc" }, { createdAt: "desc" }],
+});
 
   const hasFilters = Boolean(q || brand || sort !== "featured");
 
