@@ -56,3 +56,13 @@ export type Product = Prisma.ProductModel
  * 
  */
 export type ProductImage = Prisma.ProductImageModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model OrderItem
+ * 
+ */
+export type OrderItem = Prisma.OrderItemModel

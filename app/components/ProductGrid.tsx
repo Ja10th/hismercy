@@ -21,8 +21,9 @@ type ShopProduct = {
   }[];
 };
 
-type ShopProductsProps = {
+type ProductGridProps = {
   products: ShopProduct[];
+  columnsClassName?: string;
 };
 
 function formatNaira(amountInKobo: number) {
@@ -33,12 +34,15 @@ function formatNaira(amountInKobo: number) {
   }).format(amountInKobo / 100);
 }
 
-export default function ShopProducts({ products }: ShopProductsProps) {
+export default function ProductGrid({
+  products,
+  columnsClassName = "grid-cols-1 sm:grid-cols-3",
+}: ProductGridProps) {
   const router = useRouter();
   const { addToCart } = useCart();
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <div className={`grid gap-5 ${columnsClassName}`}>
       {products.map((product) => {
         const imageUrl = product.images[0]?.url || "/bags.png";
         const priceLabel = formatNaira(product.price);
@@ -83,27 +87,27 @@ export default function ShopProducts({ products }: ShopProductsProps) {
             <div className="relative overflow-hidden bg-[#f3f3f1]">
               <div
                 className={[
-                  "absolute inset-0 bg-[#1FC16B] transition-transform duration-300 ease-out",
+                  "absolute inset-0 bg-[#1FC16B] transition-transform duration-700 ease-out",
                   "translate-y-full group-hover:translate-y-0 group-focus-within:translate-y-0 group-active:translate-y-0",
                 ].join(" ")}
               />
 
-              <div className="relative z-10 p-5 flex flex-col gap-4">
+              <div className="relative z-10 flex flex-col gap-4 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-[22px] md:text-[24px] font-normal leading-tight text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white">
+                    <h3 className="text-[22px] font-normal leading-tight text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white md:text-[24px]">
                       {product.name}
                     </h3>
                   </div>
 
-                  <span className="shrink-0 text-[20px] md:text-2xl font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white">
+                  <span className="shrink-0 text-[20px] font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white md:text-2xl">
                     {priceLabel}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-sm text-neutral-600  group-hover:text-white/85 group-focus-within:text-white/85 group-active:text-white/85">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-neutral-600 group-hover:text-white/85 group-focus-within:text-white/85 group-active:text-white/85">
                       <Package className="h-4 w-4" />
                       {product.inStock
                         ? `In stock${product.stockCount > 0 ? ` (${product.stockCount})` : ""}`
@@ -130,7 +134,7 @@ export default function ShopProducts({ products }: ShopProductsProps) {
                         inStock: product.inStock,
                       });
                     }}
-                    className="inline-flex items-center gap-2 group-hover:bg-white group-hover:border-white w-fit rounded-full border border-neutral-900 px-4 py-2.5 text-[13px] md:text-[14px] font-medium text-neutral-900 transition-all duration-100 hover:scale-105 hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+                    className="inline-flex w-fit items-center gap-2 rounded-full border border-neutral-900 px-4 py-2.5 text-[13px] font-medium text-neutral-900 transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black group-hover:border-white group-hover:bg-white disabled:cursor-not-allowed disabled:opacity-30 md:text-[14px]"
                   >
                     Add to Cart
                   </button>
