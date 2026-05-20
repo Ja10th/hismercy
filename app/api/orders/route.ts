@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { notifyAdminWhatsApp } from "@/lib/whatsapp";
+import { sendWhatsAppNewOrderNotification } from "@/lib/whatsapp";
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
 
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
       return order;
     });
 
-    notifyAdminWhatsApp({
+    sendWhatsAppNewOrderNotification({
       orderCode: result.orderCode,
       fullName: result.fullName,
       phone: result.phone,
