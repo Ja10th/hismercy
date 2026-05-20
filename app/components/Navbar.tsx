@@ -123,7 +123,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#171717]">
+      <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#0B0B0B]">
         <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="hidden h-[72px] items-center justify-between gap-6 md:flex">
             <Link href="/" className="flex-shrink-0">
