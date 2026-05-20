@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Package, Tag } from "lucide-react";
 import { useCart } from "./cart/CartProvider";
+import { MdOutlineStar } from "react-icons/md";
 
 type HomeProduct = {
   id: string;
@@ -93,8 +94,8 @@ export default function Products({ products }: ProductsProps) {
 
                     <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                       {product.featured ? (
-                        <span className="rounded-full bg-neutral-950 px-3 py-1 text-[11px] font-medium text-white">
-                          Featured
+                        <span className="absolute left-4 top-4 rounded-full font-medium text-white">
+                          <MdOutlineStar className="h-7 w-7 text-yellow-500" />
                         </span>
                       ) : null}
 

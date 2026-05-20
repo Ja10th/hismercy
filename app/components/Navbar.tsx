@@ -1,12 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { navLinks, assets } from "@/data/content";
 import { useCart } from "./cart/CartProvider";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  CircleHelp,
+  Minus,
+  Plus,
+  Search,
+  Trash2,
+  UserRound,
+  X,
+} from "lucide-react";
 
 function formatNaira(amountInKobo: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -16,20 +25,83 @@ function formatNaira(amountInKobo: number) {
   }).format(amountInKobo / 100);
 }
 
+function ProfileDropdown() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="inline-flex items-center gap-2 rounded-xl py-2.5 px-2 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-white/20"
+      >
+        <UserRound className="h-4 w-4" />
+        <ChevronDown className="h-4 w-4 opacity-80" />
+      </button>
+
+      {open ? (
+        <div className="absolute right-0 top-full z-[260] mt-3 w-56 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1f1f] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+          <Link
+            href="/my-orders"
+            className="flex items-center gap-2 px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
+          >
+            <UserRound className="h-4 w-4" />
+            My Profile
+          </Link>
+          <Link
+            href="/contact-us"
+            className="flex items-center gap-2 px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
+          >
+            <CircleHelp className="h-4 w-4" />
+            Help
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const {
-    items,
-    totalItems,
-    subtotal,
-    updateQuantity,
-    removeFromCart,
-    clearCart,
-  } = useCart();
+  const { items, totalItems, subtotal, updateQuantity, removeFromCart } =
+    useCart();
 
   useEffect(() => {
     const shouldLock = menuOpen || cartOpen;
@@ -39,9 +111,19 @@ export default function Navbar() {
     };
   }, [menuOpen, cartOpen]);
 
+  useEffect(() => {
+    setMenuOpen(false);
+    setCartOpen(false);
+  }, [pathname]);
+
+  const navMenuItems = useMemo(
+    () => navLinks.map((link) => ({ href: link.href, label: link.label })),
+    [],
+  );
+
   return (
     <>
-      <nav className="fixed top-0 left-0 z-50 w-full border-b border-white/10 bg-[#171717]">
+      <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-[#171717]">
         <div className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="hidden h-[72px] items-center justify-between gap-6 md:flex">
             <Link href="/" className="flex-shrink-0">
@@ -50,12 +132,12 @@ export default function Navbar() {
                 alt="Agrona"
                 width={120}
                 height={56}
-                className="h-16 w-auto "
+                className="h-16 w-auto"
               />
             </Link>
 
             <div className="flex items-center gap-8">
-              {navLinks.map((link) => {
+              {navMenuItems.map((link) => {
                 const active = pathname === link.href;
 
                 return (
@@ -74,7 +156,9 @@ export default function Navbar() {
               })}
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <ProfileDropdown />
+
               <button
                 onClick={() => setCartOpen(true)}
                 aria-label="Open cart"
@@ -108,7 +192,7 @@ export default function Navbar() {
                 alt="Agrona"
                 width={96}
                 height={44}
-                className="h-11 w-auto "
+                className="h-11 w-auto"
               />
             </Link>
 
@@ -199,7 +283,7 @@ export default function Navbar() {
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-3  bg-[#f7f7f7] p-4 rounded-2xl"
+                      className="flex gap-3 rounded-2xl bg-[#f7f7f7] p-4"
                     >
                       <button
                         type="button"
@@ -227,6 +311,7 @@ export default function Navbar() {
                           <p className="mt-1 text-sm text-neutral-500">
                             {formatNaira(item.price)}
                           </p>
+
                           <div className="inline-flex items-center rounded-full bg-[#f3f3f1] p-1">
                             <button
                               type="button"
@@ -268,7 +353,7 @@ export default function Navbar() {
               </div>
 
               <div className="border-t border-black/5 bg-white p-5">
-                <div className=" bg-white p-4 ">
+                <div className="bg-white p-4">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-neutral-500">Subtotal</span>
                     <span className="text-base font-semibold text-neutral-950">
@@ -292,6 +377,125 @@ export default function Navbar() {
               </div>
             </>
           )}
+        </aside>
+      </div>
+
+      <div
+        className={`fixed inset-0 z-[220] transition ${
+          menuOpen ? "pointer-events-auto" : "pointer-events-none"
+        } md:hidden`}
+      >
+        <div
+          className={`fixed inset-0 bg-black/45 transition-opacity duration-300 ${
+            menuOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setMenuOpen(false)}
+        />
+
+        <aside
+          className={`fixed left-0 top-0 flex h-full w-full max-w-[380px] flex-col bg-[#171717] text-white transition-transform duration-300 ease-out ${
+            menuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/50">
+                Menu
+              </p>
+            </div>
+
+            <button
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="rounded-full p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 py-6">
+            <div className="space-y-2">
+              {navMenuItems.map((link) => {
+                const active = pathname === link.href;
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`block rounded-2xl px-4 py-4 text-[16px] font-medium transition ${
+                      active
+                        ? "bg-white/10 text-white"
+                        : "text-white/85 hover:bg-white/8 hover:text-white"
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-white/45">
+                Account
+              </p>
+
+              <div className="mt-4 space-y-2">
+                <Link
+                  href="/my-orders"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
+                >
+                  <UserRound className="h-4 w-4" />
+                  My Profile
+                </Link>
+
+                <Link
+                  href="/contact-us"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
+                >
+                  <CircleHelp className="h-4 w-4" />
+                  Help
+                </Link>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 p-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setCartOpen(true);
+                }}
+                className="inline-flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-medium text-neutral-950"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Image
+                    src={assets.cartIcon}
+                    alt=""
+                    width={18}
+                    height={18}
+                    className=""
+                  />
+                  View Cart
+                </span>
+                <span className="rounded-full bg-neutral-950 px-2.5 py-1 text-xs text-white">
+                  {totalItems}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 p-5">
+            <Link
+              href="/contact-us"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
+            >
+              Contact Us
+            </Link>
+          </div>
         </aside>
       </div>
     </>

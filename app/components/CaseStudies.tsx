@@ -76,7 +76,7 @@ export default function Consultation() {
                   {item.title}
                 </h3>
 
-                <p className="text-[14px] md:text-base text-neutral-600 leading-[1.7] max-w-md">
+                <p className="text-[16px] md:text-base text-neutral-600 leading-[1.7] max-w-md">
                   {item.description}
                 </p>
               </div>

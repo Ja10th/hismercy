@@ -78,15 +78,7 @@ export default async function ProductPage({
       <Navbar />
 
       <main className="bg-white pt-[72px]">
-        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
-          <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 rounded-full bg-[#F3F3F1] px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to shop
-          </Link>
-
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <div className="mt-6 grid gap-8 lg:grid-cols-2">
             <div className="rounded-[30px] p-4 sm:p-2">
               <div className="relative aspect-square overflow-hidden rounded-[26px] bg-[#F3F3F1]">
@@ -107,7 +99,7 @@ export default async function ProductPage({
 
               <div className="mt-4 flex items-center justify-between gap-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-xs  text-orange-500 bg-orange-100 border border-orange-200 rounded-full px-3 py-1 font-medium">
                     {product.brand?.name || "No brand"}
                   </p>
 
@@ -124,7 +116,7 @@ export default async function ProductPage({
                   </div>
                 </div>
 
-                <p className="text-3xl font-medium text-neutral-950">
+                <p className="text-xl md:text-3xl font-medium text-neutral-950">
                   {formatNaira(product.price)}
                 </p>
               </div>
@@ -147,9 +139,9 @@ export default async function ProductPage({
                 />
               </div>
 
-              <div className="mt-6 space-y-2">
+              <div className="mt-6 space-y-2 hidden md:block">
                 <div className="">
-                  <div className="flex items-center gap-2 text-sm font-medium text-neutral-950">
+                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
                     <Truck className="h-4 w-4" />
                     <span className="font-semibold">Delivery:</span> We deliver
                     on time, within 3 to 7 days.
@@ -157,7 +149,7 @@ export default async function ProductPage({
                 </div>
 
                 <div className="">
-                  <div className="flex items-center gap-2 text-sm font-medium text-neutral-950">
+                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
                     <ShieldCheck className="h-4 w-4" />
                     <span className="font-semibold">Secure Payment:</span> Enjoy
                     safe encrypted payments.
@@ -165,7 +157,7 @@ export default async function ProductPage({
                 </div>
 
                 <div className="">
-                  <div className="flex items-center gap-2 text-sm font-medium text-neutral-950">
+                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
                     <RotateCcw className="h-4 w-4" />
                     <span className="font-semibold">
                       Returns and Refunds:

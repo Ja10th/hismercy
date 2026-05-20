@@ -1,0 +1,99 @@
+import { prisma } from "@/lib/prisma";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import { notFound } from "next/navigation";
+import { CalendarDays, ArrowLeft, Tag } from "lucide-react";
+import Link from "next/link";
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const now = new Date();
+
+  const post = await prisma.blogPost.findFirst({
+    where: {
+      slug,
+      OR: [
+        { status: "published" },
+        {
+          status: "scheduled",
+          scheduledAt: { lte: now },
+        },
+      ],
+    },
+  });
+
+  if (!post) notFound();
+
+  const publishedDate = post.publishedAt || post.createdAt;
+
+  return (
+    <>
+      <Navbar />
+      <main className="">
+        <section className="py-24 md:py-32">
+          <div className="mx-auto max-w-[960px] px-8">
+            <Link
+              href="/blog"
+              className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:opacity-75"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to blog
+            </Link>
+
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#d8c2b2] bg-[#f7efe6] px-4 py-1.5 text-[13px] font-medium text-[#3f2a26]">
+                <Tag className="h-3.5 w-3.5" />
+                {post.category || "Blog"}
+              </span>
+
+              <span className="inline-flex items-center gap-2 text-[13px] ">
+                <CalendarDays className="h-3.5 w-3.5" />
+                {formatDate(publishedDate)}
+              </span>
+            </div>
+
+            <h1 className="max-w-4xl text-3xl   sm:text-[72px] lg:text-5xl">
+              {post.title}
+            </h1>
+
+            {post.excerpt ? (
+              <p className="mt-6 max-w-3xl text-[18px] leading-8 text-gray-500">
+                {post.excerpt}
+              </p>
+            ) : null}
+
+            {post.coverImage ? (
+              <div className="mt-10 overflow-hidden rounded-[20px] bg-white">
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className="h-[420px] w-full object-cover"
+                />
+              </div>
+            ) : null}
+
+            <article className="prose prose-neutral mt-10 max-w-none rounded-[20px] px-2 py-8 text-gray-600">
+              <div
+                dangerouslySetInnerHTML={{ __html: post.content }}
+                className="[&_h1]:font-serif [&_h1]:text-4xl [&_h1]:tracking-[-0.04em] [&_h1]:text-gray-600 [&_h2]:font-serif [&_h2]:text-3xl [&_h2]:tracking-[-0.04em] [&_h2]:text-gray-600 [&_h3]:font-serif [&_h3]:text-2xl [&_h3]:tracking-[-0.03em] [&_h3]:text-gray-600 [&_p]:my-5 [&_img]:my-8 [&_img]:w-full [&_img]:rounded-[20px] [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-5 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-gray-600 [&_a]:underline"
+              />
+            </article>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

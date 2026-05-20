@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -78,7 +79,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((current) => current.filter((item) => item.id !== id));
   };
 
-  const clearCart = () => setItems([]);
+  // in your cart context/provider
+const clearCart = useCallback(() => {
+  setItems([]);
+}, []);
 
   const totalItems = useMemo(
     () => items.reduce((sum, item) => sum + item.qty, 0),

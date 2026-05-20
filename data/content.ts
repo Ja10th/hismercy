@@ -64,8 +64,7 @@ export interface FooterLinkGroup {
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Service", href: "/service" },
-  { label: "Case Study", href: "/case-study" },
+  { label: "Testimonials", href: "/testimonials" },
   { label: "Shop", href: "/shop" },
   { label: "Blog", href: "/blog" },
 ];

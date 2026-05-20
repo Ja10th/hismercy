@@ -20,10 +20,10 @@ export default function CTA() {
       {/* Content */}
       <div className="relative z-20 w-full max-w-[1280px] mx-auto px-8 py-20">
         <div className="max-w-2xl flex flex-col gap-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium text-white leading-[1.18] tracking-tight">
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-medium text-white leading-[1.18] tracking-tight">
             Quality Feed and Farm Supplies for Better Growth
           </h1>
-          <p className="text-white/82 text-[17px] leading-[1.7] max-w-md">
+          <p className="text-white/82 text-[16px] leading-[1.7] max-w-md">
             Trust Mercy Agric Services for branded feeds, feed ingredients, and reliable farm supplies that support healthier birds, stronger livestock, and better farm results.
           </p>
           <div className="flex gap-4 flex-wrap">

@@ -1,20 +1,28 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 import Image from "next/image";
+import Link from "next/link";
+import { MdOutlineStar } from "react-icons/md";
 import {
-  Plus,
+  Camera,
+  Grid2X2,
+  LayoutList,
   PencilLine,
-  X,
-  Package,
+  Plus,
+  Search,
+  SlidersHorizontal,
   Tag,
   Trash2,
-  Camera,
+  X,
+  Package,
+  Check,
+  ChevronDown,
+  MoreVertical,
 } from "lucide-react";
-import { Fragment } from "react";
+import ProductsToolbar from "@/app/components/ProductsToolBar";
 
 type BrandOption = {
   id: string;
@@ -40,6 +48,17 @@ type ProductItem = {
   }[];
 };
 
+type ProductsPageProps = {
+  searchParams?: Promise<{
+    q?: string;
+    brand?: string;
+    status?: string;
+    sort?: string;
+    view?: string;
+    page?: string;
+  }>;
+};
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -56,9 +75,66 @@ function formatNaira(amountInKobo: number) {
   }).format(amountInKobo / 100);
 }
 
-function truncate(text: string, length = 100) {
+function truncate(text: string, length = 110) {
   if (text.length <= length) return text;
   return text.slice(0, length).trim() + "...";
+}
+
+function buildProductsHref(
+  current: {
+    q?: string;
+    brand?: string;
+    status?: string;
+    sort?: string;
+    view?: string;
+  },
+  overrides: Partial<{
+    q: string;
+    brand: string;
+    status: string;
+    sort: string;
+    view: string;
+  }> = {},
+) {
+  const params = new URLSearchParams();
+
+  const q = overrides.q ?? current.q;
+  const brand = overrides.brand ?? current.brand;
+  const status = overrides.status ?? current.status;
+  const sort = overrides.sort ?? current.sort;
+  const view = overrides.view ?? current.view;
+
+  if (q) params.set("q", q);
+  if (brand) params.set("brand", brand);
+  if (status && status !== "all") params.set("status", status);
+  if (sort && sort !== "featured") params.set("sort", sort);
+  if (view && view !== "grid") params.set("view", view);
+
+  const query = params.toString();
+  return query ? `/admin/products?${query}` : "/admin/products";
+}
+
+function buildProductsPageHref(
+  current: {
+    q?: string;
+    brand?: string;
+    status?: string;
+    sort?: string;
+    view?: string;
+  },
+  page: number,
+) {
+  const params = new URLSearchParams();
+
+  if (current.q) params.set("q", current.q);
+  if (current.brand) params.set("brand", current.brand);
+  if (current.status && current.status !== "all") params.set("status", current.status);
+  if (current.sort && current.sort !== "featured") params.set("sort", current.sort);
+  if (current.view && current.view !== "grid") params.set("view", current.view);
+  if (page > 1) params.set("page", String(page));
+
+  const query = params.toString();
+  return query ? `/admin/products?${query}` : "/admin/products";
 }
 
 async function getUniqueProductSlug(baseSlug: string, excludeId?: string) {
@@ -96,13 +172,11 @@ async function resolveProductSlug(
 
   const brandSlug = brand?.slug || "general";
   const baseSlug = slugify(`${brandSlug}-${name}`);
-
   return getUniqueProductSlug(baseSlug, excludeId);
 }
 
 async function saveUploadedImagesToDisk(files: File[]) {
   const urls: string[] = [];
-
   if (files.length === 0) return urls;
 
   const uploadDir = path.join(process.cwd(), "public", "uploads");
@@ -175,8 +249,6 @@ async function createProduct(formData: FormData) {
   revalidatePath("/admin/products");
   revalidatePath("/");
   revalidatePath("/shop");
-
-  redirect("/admin/products");
 }
 
 async function updateProduct(formData: FormData) {
@@ -192,7 +264,6 @@ async function updateProduct(formData: FormData) {
   const inStock = formData.get("inStock") === "on";
   const featured = formData.get("featured") === "on";
   const featuredOrder = Number(formData.get("featuredOrder") || 999);
-  const primaryImageId = String(formData.get(`primaryImageId-${id}`) || "");
 
   if (!id || !name) return;
 
@@ -201,66 +272,41 @@ async function updateProduct(formData: FormData) {
 
   const slug = await resolveProductSlug(name, brandId, id);
 
-  const existingImages = await prisma.productImage.findMany({
-    where: { productId: id },
-    select: { id: true, url: true },
+  await prisma.product.update({
+    where: { id },
+    data: {
+      name,
+      slug,
+      price,
+      description: description || null,
+      brandId: brandId || null,
+      stockCount,
+      inStock,
+      featured,
+      featuredOrder,
+    },
   });
-
-  const selectedPrimary =
-    existingImages.find((image) => image.id === primaryImageId) ||
-    existingImages[0] ||
-    null;
 
   const files = formData
     .getAll("images")
     .filter((value): value is File => value instanceof File && value.size > 0);
 
-  const uploadedUrls = await saveUploadedImagesToDisk(files);
+  if (files.length > 0) {
+    const uploadedUrls = await saveUploadedImagesToDisk(files);
 
-  const orderedUrls = [
-    ...(selectedPrimary ? [selectedPrimary.url] : []),
-    ...existingImages
-      .filter((image) => image.id !== selectedPrimary?.id)
-      .map((image) => image.url),
-    ...uploadedUrls,
-  ];
-
-  await prisma.$transaction(async (tx) => {
-    await tx.product.update({
-      where: { id },
-      data: {
-        name,
-        slug,
-        price,
-        description: description || null,
-        brandId: brandId || null,
-        stockCount,
-        inStock,
-        featured,
-        featuredOrder,
-      },
-    });
-
-    await tx.productImage.deleteMany({
-      where: { productId: id },
-    });
-
-    for (const url of orderedUrls) {
-      await tx.productImage.create({
+    for (const url of uploadedUrls) {
+      await prisma.productImage.create({
         data: {
-          productId: id,
           url,
+          productId: id,
         },
       });
     }
-  });
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath(`/shop/${slug}`);
-
-  redirect("/admin/products");
 }
 
 async function deleteProduct(formData: FormData) {
@@ -269,30 +315,13 @@ async function deleteProduct(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
 
-  const product = await prisma.product.findUnique({
+  await prisma.product.delete({
     where: { id },
-    select: { slug: true },
-  });
-
-  await prisma.$transaction(async (tx) => {
-    await tx.productImage.deleteMany({
-      where: { productId: id },
-    });
-
-    await tx.product.delete({
-      where: { id },
-    });
   });
 
   revalidatePath("/admin/products");
   revalidatePath("/");
   revalidatePath("/shop");
-
-  if (product?.slug) {
-    revalidatePath(`/shop/${product.slug}`);
-  }
-
-  redirect("/admin/products");
 }
 
 function ProductFields({
@@ -308,13 +337,13 @@ function ProductFields({
         name="name"
         defaultValue={product?.name || ""}
         placeholder="Product name"
-        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-400 focus:bg-white"
+        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
       />
 
       <select
         name="brandId"
         defaultValue={product?.brandId || ""}
-        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition focus:border-emerald-400 focus:bg-white"
+        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition focus:border-neutral-400 focus:bg-white"
       >
         <option value="">Select brand</option>
         {brands.map((brand) => (
@@ -330,7 +359,7 @@ function ProductFields({
         step="0.01"
         defaultValue={product ? (product.price / 100).toFixed(2) : ""}
         placeholder="Price in naira"
-        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-400 focus:bg-white"
+        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
       />
 
       <input
@@ -338,7 +367,7 @@ function ProductFields({
         type="number"
         defaultValue={product?.stockCount ?? 0}
         placeholder="Stock count"
-        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-400 focus:bg-white"
+        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
       />
 
       <input
@@ -346,7 +375,7 @@ function ProductFields({
         type="number"
         defaultValue={product?.featuredOrder ?? 999}
         placeholder="Homepage order"
-        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-400 focus:bg-white"
+        className="h-12 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
       />
 
       <label className="inline-flex h-12 items-center gap-3 rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm text-neutral-700">
@@ -354,7 +383,7 @@ function ProductFields({
           type="checkbox"
           name="inStock"
           defaultChecked={product ? product.inStock : true}
-          className="h-4 w-4 rounded border-neutral-300 accent-emerald-600"
+          className="h-4 w-4 rounded border-neutral-300 accent-emerald-900"
         />
         <span>In stock</span>
       </label>
@@ -364,7 +393,7 @@ function ProductFields({
           type="checkbox"
           name="featured"
           defaultChecked={product?.featured ?? false}
-          className="h-4 w-4 rounded border-neutral-300 accent-emerald-600"
+          className="h-4 w-4 rounded border-neutral-300 accent-neutral-900"
         />
         <span>Show on homepage</span>
       </label>
@@ -373,7 +402,7 @@ function ProductFields({
         name="description"
         defaultValue={product?.description || ""}
         placeholder="Product description"
-        className="md:col-span-2 min-h-[140px] w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-400 focus:bg-white"
+        className="md:col-span-2 min-h-[140px] w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
       />
 
       <input
@@ -381,7 +410,7 @@ function ProductFields({
         type="file"
         multiple
         accept="image/*"
-        className="md:col-span-2 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-neutral-950 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
+        className="md:col-span-2 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm file:mr-4 file:rounded-xl file:border-0 file:bg-emerald-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
       />
     </div>
   );
@@ -396,9 +425,10 @@ function AddProductModal({ brands }: { brands: BrandOption[] }) {
 
       <label
         htmlFor={modalId}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-neutral-950 px-3 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-800"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-xs font-medium text-white shadow-sm transition hover:bg-neutral-800"
       >
         <Plus className="h-4 w-4" />
+        Add Product
       </label>
 
       <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
@@ -441,12 +471,12 @@ function AddProductModal({ brands }: { brands: BrandOption[] }) {
               <div className="flex items-center gap-3">
                 <label
                   htmlFor={modalId}
-                  className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+                  className="inline-flex cursor-pointer items-center rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
                 >
                   Cancel
                 </label>
 
-                <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
+                <button className="inline-flex h-11 items-center rounded-xl bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
                   Save Product
                 </button>
               </div>
@@ -458,155 +488,42 @@ function AddProductModal({ brands }: { brands: BrandOption[] }) {
   );
 }
 
-function EditProductModal({
-  product,
-  brands,
+function ActionsMenu({
+  editModalId,
+  productId,
+  deleteAction,
 }: {
-  product: ProductItem;
-  brands: BrandOption[];
+  editModalId: string;
+  productId: string;
+  deleteAction: (formData: FormData) => Promise<void>;
 }) {
-  const modalId = `edit-product-${product.id}`;
-  const formId = `edit-form-${product.id}`;
-  const imageUrl = product.images[0]?.url || "/bags.png";
-  const primarySelectName = `primaryImageId-${product.id}`;
-
   return (
-    <div className="relative">
-      <input id={modalId} type="checkbox" className="peer sr-only" />
+    <details className="relative ml-auto group">
+      <summary className="list-none inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 transition hover:bg-neutral-100 [&::-webkit-details-marker]:hidden">
+        <MoreVertical className="h-5 w-5" />
+      </summary>
 
-      <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
+      <div className="absolute -top-28 right-0 z-20 mt-2 w-40 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-lg">
         <label
-          htmlFor={modalId}
-          className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
-        />
+          htmlFor={editModalId}
+          className="flex cursor-pointer items-center gap-2 px-4 py-3 text-sm text-neutral-700 transition hover:bg-neutral-100"
+        >
+          <PencilLine className="h-4 w-4" />
+          Edit
+        </label>
 
-        <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
-          <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-            <div>
-              <h3 className="text-lg font-semibold text-neutral-950">
-                Edit product
-              </h3>
-              <p className="mt-1 text-sm text-neutral-500">
-                Pick the main image, then save changes.
-              </p>
-            </div>
-
-            <label
-              htmlFor={modalId}
-              className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
-              aria-label="Close modal"
-            >
-              <X className="h-4 w-4" />
-            </label>
-          </div>
-
-          <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
-            <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
-              <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
-                {product.images.length > 0 ? (
-                  product.images.map((image, index) => {
-                    const radioId = `${modalId}-image-${image.id}`;
-
-                    return (
-                      <Fragment key={image.id}>
-                        <input
-                          id={radioId}
-                          type="radio"
-                          name={primarySelectName}
-                          form={formId}
-                          value={image.id}
-                          defaultChecked={index === 0}
-                          className="peer sr-only"
-                        />
-
-                        <div className="absolute inset-0 opacity-0 transition-opacity duration-200 peer-checked:opacity-100">
-                          <Image
-                            src={image.url}
-                            alt={product.name}
-                            fill
-                            className="object-contain p-4"
-                          />
-                        </div>
-                      </Fragment>
-                    );
-                  })
-                ) : (
-                  <Image
-                    src={imageUrl}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-4"
-                  />
-                )}
-              </div>
-
-              {product.images.length > 0 ? (
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  {product.images.map((image) => {
-                    const radioId = `${modalId}-image-${image.id}`;
-
-                    return (
-                      <label
-                        key={image.id}
-                        htmlFor={radioId}
-                        className="relative aspect-square cursor-pointer overflow-hidden rounded-2xl border border-neutral-200 bg-white transition hover:border-neutral-400"
-                      >
-                        <Image
-                          src={image.url}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
-              ) : null}
-
-              <div className="mt-5 rounded-2xl bg-white p-4 shadow-sm">
-                <p className="text-sm font-semibold text-neutral-950">
-                  {product.name}
-                </p>
-                <p className="mt-1 text-sm text-neutral-500">
-                  {product.brand?.name || "No brand"}
-                </p>
-                <p className="mt-1 text-sm text-neutral-500">
-                  {formatNaira(product.price)}
-                </p>
-              </div>
-            </div>
-
-            <form id={formId} action={updateProduct} className="p-5 sm:p-6">
-              <input type="hidden" name="id" value={product.id} />
-
-              <ProductFields brands={brands} product={product} />
-
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-neutral-500">
-                  Existing images stay. New uploads will be added.
-                </p>
-
-                <div className="flex items-center gap-3">
-                  <label
-                    htmlFor={modalId}
-                    className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
-                  >
-                    Cancel
-                  </label>
-
-                  <button
-                    type="submit"
-                    className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
+        <form action={deleteAction}>
+          <input type="hidden" name="id" value={productId} />
+          <button
+            type="submit"
+            className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-600 transition hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </button>
+        </form>
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -618,30 +535,23 @@ function ProductCard({
   brands: BrandOption[];
 }) {
   const imageUrl = product.images[0]?.url || "/bags.png";
+  const editModalId = `edit-product-${product.id}`;
 
   return (
-    <div className="overflow-hidden rounded-[32px] border border-neutral-200 bg-white">
-      <div className="relative aspect-[5/3] bg-neutral-100">
+    <div className="group relative overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
+      <div className="relative aspect-[6/3] bg-neutral-50">
         <Image
           src={imageUrl}
           alt={product.name}
           fill
-          className="object-contain"
+          className="object-contain p-6 h-20 w-auto transition-transform duration-700 group-hover:scale-[1.03]"
         />
 
-        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          {product.featured ? (
-            <span className="rounded-full bg-neutral-950 px-3 py-1 text-[11px] font-medium text-white">
-              Featured
-            </span>
-          ) : null}
-
-          {!product.inStock ? (
-            <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-neutral-900">
-              Out of stock
-            </span>
-          ) : null}
-        </div>
+        {product.featured ? (
+          <span className="absolute left-4 top-4 rounded-full font-medium text-white">
+            <MdOutlineStar className="h-4 w-4 text-yellow-500" />
+          </span>
+        ) : null}
       </div>
 
       <div className="p-5">
@@ -650,6 +560,7 @@ function ProductCard({
             <h2 className="text-[20px] font-semibold tracking-tight text-neutral-950">
               {product.name}
             </h2>
+
             <p className="mt-1 flex items-center gap-2 text-sm text-neutral-500">
               <Tag className="h-4 w-4" />
               {product.brand?.name || "No brand"}
@@ -657,7 +568,7 @@ function ProductCard({
           </div>
 
           <div className="text-right">
-            <p className="text-xl font-semibold text-neutral-950">
+            <p className="text-[20px] font-semibold text-neutral-950">
               {formatNaira(product.price)}
             </p>
             <p className="mt-1 break-all text-xs text-neutral-400">
@@ -666,22 +577,23 @@ function ProductCard({
           </div>
         </div>
 
-        {product.description ? (
-          <p className="mt-4 text-sm leading-6 text-neutral-600">
-            {truncate(product.description)}
-          </p>
-        ) : (
-          <p className="mt-4 text-sm leading-6 text-neutral-400">
-            No description added yet.
-          </p>
-        )}
-        <div className="flex justify-between">
-          <div className="mt-5 flex flex-wrap items-center gap-2">
+        <p
+          className="mt-4 text-sm leading-6 text-neutral-600"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {product.description || "No description added yet."}
+        </p>
+
+        <div className=" mt-5 flex justify-between items-center gap-2 transform transition duration-700 ease-in-out">
+          <div className="flex gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
               <Package className="h-3.5 w-3.5" />
-              {product.inStock
-                ? `Stock: ${product.stockCount}`
-                : "Out of stock"}
+              Stock: {product.stockCount}
             </span>
 
             <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
@@ -690,40 +602,365 @@ function ProductCard({
               {product.images.length === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="mt-6 flex items-center justify-end gap-3">
-            <label
-              htmlFor={`edit-product-${product.id}`}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-3 text-sm font-medium text-black transition hover:border-neutral-300 hover:bg-neutral-100"
-            >
-              <PencilLine className="h-4 w-4" />
-            </label>
-
-            <form action={deleteProduct}>
-              <input type="hidden" name="id" value={product.id} />
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-3 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-100"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </form>
+          <div className="hidden group-hover:flex transform transition duration-700 ease-in-out absolute bottom-0 right-0 p-4">
+            <ActionsMenu
+              editModalId={editModalId}
+              productId={product.id}
+              deleteAction={deleteProduct}
+            />
           </div>
         </div>
       </div>
 
-      <EditProductModal product={product} brands={brands} />
+      <div className="relative">
+        <input id={editModalId} type="checkbox" className="peer sr-only" />
+
+        <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
+          <label
+            htmlFor={editModalId}
+            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+          />
+
+          <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
+            <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-950">
+                  Edit product
+                </h3>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Update the product details and save changes.
+                </p>
+              </div>
+
+              <label
+                htmlFor={editModalId}
+                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
+                aria-label="Close modal"
+              >
+                <X className="h-4 w-4" />
+              </label>
+            </div>
+
+            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
+              <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
+                <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
+                  <Image
+                    src={imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-4"
+                  />
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <p className="text-base font-semibold text-neutral-950">
+                    {product.name}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {product.brand?.name || "No brand"}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {formatNaira(product.price)}
+                  </p>
+                  <p className="text-xs text-neutral-400 break-all">
+                    {product.slug}
+                  </p>
+                </div>
+              </div>
+
+              <form action={updateProduct} className="p-5 sm:p-6">
+                <input type="hidden" name="id" value={product.id} />
+                <ProductFields brands={brands} product={product} />
+
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-neutral-500">
+                    Existing images stay. New uploads will be added.
+                  </p>
+
+                  <div className="flex items-center gap-3">
+                    <label
+                      htmlFor={editModalId}
+                      className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+                    >
+                      Cancel
+                    </label>
+
+                    <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default async function ProductsPage() {
+function ProductRow({
+  product,
+  brands,
+}: {
+  product: ProductItem;
+  brands: BrandOption[];
+}) {
+  const imageUrl = product.images[0]?.url || "/bags.png";
+  const editModalId = `edit-product-row-${product.id}`;
+
+  return (
+    <div className="overflow-hidden rounded-[26px] border border-neutral-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.04)]">
+      <div className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
+        <div className="relative h-28 w-full overflow-hidden rounded-2xl bg-neutral-50 lg:h-24 lg:w-24 lg:shrink-0">
+          <Image
+            src={imageUrl}
+            alt={product.name}
+            fill
+            className="object-contain p-3"
+          />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="relative flex flex-wrap items-center gap-2">
+                {product.featured ? (
+                  <span className=" rounded-full font-medium text-white">
+                    <MdOutlineStar className="h-4 w-4 text-yellow-500" />
+                  </span>
+                ) : null}
+                <span className="rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-[11px] font-medium text-neutral-600">
+                  {product.brand?.name || "No brand"}
+                </span>
+              </div>
+
+              <h2 className="mt-3 text-lg font-semibold text-neutral-950">
+                {product.name}
+              </h2>
+
+              <p
+                className="mt-2 text-sm leading-6 text-neutral-600"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {product.description || "No description added yet."}
+              </p>
+            </div>
+
+            <div className="shrink-0 text-right">
+              <p className="text-xl font-semibold text-neutral-950">
+                {formatNaira(product.price)}
+              </p>
+              <p className="mt-1 text-xs text-neutral-400 break-all">
+                {product.slug}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
+              <Package className="h-3.5 w-3.5" />
+              Stock: {product.stockCount}
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
+              <Camera className="h-3.5 w-3.5" />
+              {product.images.length} image
+              {product.images.length === 1 ? "" : "s"}
+            </span>
+
+            {!product.inStock ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-600">
+                Out of stock
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 lg:flex-col lg:items-end">
+          <label
+            htmlFor={editModalId}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+          >
+            <PencilLine className="h-4 w-4" />
+            Edit
+          </label>
+
+          <form action={deleteProduct}>
+            <input type="hidden" name="id" value={product.id} />
+            <button
+              type="submit"
+              className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:border-red-300 hover:bg-red-100"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="relative">
+        <input id={editModalId} type="checkbox" className="peer sr-only" />
+
+        <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
+          <label
+            htmlFor={editModalId}
+            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+          />
+
+          <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
+            <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+              <div>
+                <h3 className="text-lg font-semibold text-neutral-950">
+                  Edit product
+                </h3>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Update the product details and save changes.
+                </p>
+              </div>
+
+              <label
+                htmlFor={editModalId}
+                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
+                aria-label="Close modal"
+              >
+                <X className="h-4 w-4" />
+              </label>
+            </div>
+
+            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
+              <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
+                <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
+                  <Image
+                    src={imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-4"
+                  />
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <p className="text-base font-semibold text-neutral-950">
+                    {product.name}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {product.brand?.name || "No brand"}
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    {formatNaira(product.price)}
+                  </p>
+                  <p className="text-xs text-neutral-400 break-all">
+                    {product.slug}
+                  </p>
+                </div>
+              </div>
+
+              <form action={updateProduct} className="p-5 sm:p-6">
+                <input type="hidden" name="id" value={product.id} />
+                <ProductFields brands={brands} product={product} />
+
+                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-neutral-500">
+                    Existing images stay. New uploads will be added.
+                  </p>
+
+                  <div className="flex items-center gap-3">
+                    <label
+                      htmlFor={editModalId}
+                      className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+                    >
+                      Cancel
+                    </label>
+
+                    <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default async function ProductsPage({
+  searchParams,
+}: ProductsPageProps) {
+  const params = searchParams ? await searchParams : {};
+
+  const q = typeof params.q === "string" ? params.q.trim() : "";
+  const brand = typeof params.brand === "string" ? params.brand.trim() : "";
+  const status =
+    typeof params.status === "string" ? params.status.trim() : "all";
+  const sort =
+    typeof params.sort === "string" ? params.sort.trim() : "featured";
+  const view = params.view === "list" ? "list" : "grid";
+  const page = Math.max(1, Number(params.page || "1") || 1);
+  const perPage = 6;
+
   const brands = await prisma.brand.findMany({
     orderBy: { name: "asc" },
   });
 
+  const where: Record<string, unknown> = {};
+
+  if (q) {
+    where.OR = [
+      { name: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
+      { slug: { contains: q, mode: "insensitive" } },
+    ];
+  }
+
+  if (brand) {
+    where.brandId = brand;
+  }
+
+  if (status === "in_stock") {
+    where.inStock = true;
+  } else if (status === "out_of_stock") {
+    where.inStock = false;
+  } else if (status === "featured") {
+    where.featured = true;
+  }
+
+  const orderBy =
+    sort === "price_asc"
+      ? { price: "asc" as const }
+      : sort === "price_desc"
+        ? { price: "desc" as const }
+        : sort === "name_asc"
+          ? { name: "asc" as const }
+          : sort === "oldest"
+            ? { createdAt: "asc" as const }
+            : [
+                { featured: "desc" as const },
+                { featuredOrder: "asc" as const },
+                { createdAt: "desc" as const },
+              ];
+
+  const totalCount = await prisma.product.count({ where });
+  const pageCount = Math.max(1, Math.ceil(totalCount / perPage));
+  const currentPage = Math.min(page, pageCount);
+  const skip = (currentPage - 1) * perPage;
+
   const products = await prisma.product.findMany({
-    include: { brand: true, images: true },
-    orderBy: { createdAt: "desc" },
+    where,
+    include: {
+      brand: true,
+      images: true,
+    },
+    orderBy,
+    skip,
+    take: perPage,
   });
 
   const typedBrands: BrandOption[] = brands.map((brand) => ({
@@ -756,49 +993,118 @@ export default async function ProductsPage() {
     })),
   }));
 
+  const currentQuery = { q, brand, status, sort, view };
+
   return (
-    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-2">
-      <div className="mx-auto max-w-8xl">
-        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-3xl">
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl ">
+    <div className="min-h-screen bg-neutral-50 px-4 pt-9 pb-3 sm:px-6 lg:px-2">
+      <div className="mx-auto max-w-400">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-neutral-950">
               Products
             </h1>
-            <p className="mt-3 text-sm leading-6 text-neutral-500">
-              Manage your products. Add, edit, delete as you wish!
+            <p className="mt-2 text-sm text-neutral-500">
+              Manage your products and inventory.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <AddProductModal brands={typedBrands} />
-          </div>
+          <AddProductModal brands={typedBrands} />
         </div>
 
-        {typedProducts.length === 0 ? (
-          <div className="rounded-[32px] border border-dashed border-neutral-300 bg-white p-10 text-center shadow-[0_16px_40px_rgba(15,23,42,0.04)]">
-            <Package className="mx-auto h-10 w-10 text-neutral-300" />
-            <h2 className="mt-4 text-lg font-semibold text-neutral-950">
-              No products yet
-            </h2>
-            <p className="mt-2 text-sm text-neutral-500">
-              Add your first product to get started.
-            </p>
+        <ProductsToolbar brands={typedBrands} currentQuery={currentQuery} />
 
-            <div className="mt-6 flex justify-center">
-              <AddProductModal brands={typedBrands} />
+        <div className="mt-5">
+          {typedProducts.length === 0 ? (
+            <div className="rounded-[30px] border border-dashed border-neutral-300 bg-white p-10 text-center">
+              <Package className="mx-auto h-10 w-10 text-neutral-300" />
+              <h2 className="mt-4 text-lg font-semibold text-neutral-950">
+                No products found
+              </h2>
+              <p className="mt-2 text-sm text-neutral-500">
+                Try a different search or add a new product.
+              </p>
+
+              <div className="mt-6 flex justify-center">
+                <AddProductModal brands={typedBrands} />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-            {typedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                brands={typedBrands}
-              />
-            ))}
-          </div>
-        )}
+          ) : view === "list" ? (
+            <div className="space-y-4">
+              {typedProducts.map((product) => (
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  brands={typedBrands}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {typedProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  brands={typedBrands}
+                />
+              ))}
+            </div>
+          )}
+
+          {pageCount > 1 ? (
+            <div className="mt-6 flex flex-col gap-3 border-t border-neutral-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-neutral-500">
+                Showing {skip + 1} to {Math.min(skip + perPage, totalCount)} of{" "}
+                {totalCount} products
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={buildProductsPageHref(
+                    currentQuery,
+                    Math.max(1, currentPage - 1),
+                  )}
+                  className={`inline-flex h-10 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                    currentPage === 1
+                      ? "pointer-events-none border-neutral-200 bg-neutral-100 text-neutral-400"
+                      : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+                  }`}
+                >
+                  <ChevronDown className="h-4 w-4 rotate-90" />
+                  Prev
+                </Link>
+
+                {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
+                  <Link
+                    key={p}
+                    href={buildProductsPageHref(currentQuery, p)}
+                    className={`inline-flex h-10 min-w-10 items-center justify-center rounded-2xl border px-3 text-xs font-medium transition ${
+                      p === currentPage
+                        ? "border-emerald-700 bg-emerald-700 text-white"
+                        : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+                    }`}
+                  >
+                    {p}
+                  </Link>
+                ))}
+
+                <Link
+                  href={buildProductsPageHref(
+                    currentQuery,
+                    Math.min(pageCount, currentPage + 1),
+                  )}
+                  className={`inline-flex h-10 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                    currentPage === pageCount
+                      ? "pointer-events-none border-neutral-200 bg-neutral-100 text-neutral-400"
+                      : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
+                  }`}
+                >
+                  Next
+                  <ChevronDown className="h-4 w-4 -rotate-90" />
+                </Link>
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );
