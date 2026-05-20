@@ -13,6 +13,7 @@ import {
   Clock3,
   LogOut,
 } from "lucide-react";
+import LogoutButton from "../components/LogoutButton";
 
 const groups = [
   {
@@ -176,14 +177,8 @@ export default function AdminSidebar() {
       </div>
 
       <div className="border-t border-white/10 p-3">
-        <form action="/admin/logout" method="post">
-          <button
-            type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </button>
+        <form action="/api/admin/logout" method="post">
+          <LogoutButton />
         </form>
       </div>
     </aside>
