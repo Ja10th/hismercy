@@ -1,10 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import {
-  sendAdminOrderEmail,
-  sendCustomerOrderEmail,
-} from "@/lib/email";
+import { sendAdminOrderEmail, sendCustomerOrderEmail } from "@/lib/email";
 
 type PaidOrderEmailPayload = {
   orderCode: string;
@@ -86,140 +83,139 @@ export async function POST(request: Request) {
 
     const dedupeKey = `${eventName}:${reference || "no-ref"}:${transactionId ?? "no-id"}`;
 
-    const paidOrderForEmail = await prisma.$transaction<
-      PaidOrderEmailPayload | null
-    >(async (tx) => {
-      const existing = await tx.paymentAuditLog.findUnique({
-        where: { dedupeKey },
-        select: { id: true, status: true },
-      });
-
-      if (existing?.status === "processed") {
-        return null;
-      }
-
-      if (!existing) {
-        await tx.paymentAuditLog.create({
-          data: {
-            provider: "paystack",
-            event: eventName,
-            dedupeKey,
-            reference: reference || null,
-            transactionId,
-            rawBody,
-            signatureVerified: true,
-            status: "received",
-          },
-        });
-      }
-
-      if (eventName !== "charge.success" || !reference) {
-        await tx.paymentAuditLog.update({
+    const paidOrderForEmail =
+      await prisma.$transaction<PaidOrderEmailPayload | null>(async (tx) => {
+        const existing = await tx.paymentAuditLog.findUnique({
           where: { dedupeKey },
-          data: {
-            status: "ignored",
-            errorMessage:
-              eventName !== "charge.success"
-                ? `Ignored event: ${eventName}`
-                : "Missing reference",
-            processedAt: new Date(),
+          select: { id: true, status: true },
+        });
+
+        if (existing?.status === "processed") {
+          return null;
+        }
+
+        if (!existing) {
+          await tx.paymentAuditLog.create({
+            data: {
+              provider: "paystack",
+              event: eventName,
+              dedupeKey,
+              reference: reference || null,
+              transactionId,
+              rawBody,
+              signatureVerified: true,
+              status: "received",
+            },
+          });
+        }
+
+        if (eventName !== "charge.success" || !reference) {
+          await tx.paymentAuditLog.update({
+            where: { dedupeKey },
+            data: {
+              status: "ignored",
+              errorMessage:
+                eventName !== "charge.success"
+                  ? `Ignored event: ${eventName}`
+                  : "Missing reference",
+              processedAt: new Date(),
+            },
+          });
+          return null;
+        }
+
+        const order = await tx.order.findUnique({
+          where: { orderCode: reference },
+          select: {
+            id: true,
+            orderCode: true,
+            total: true,
+            paymentStatus: true,
+            fullName: true,
+            email: true,
+            phone: true,
           },
         });
-        return null;
-      }
 
-      const order = await tx.order.findUnique({
-        where: { orderCode: reference },
-        select: {
-          id: true,
-          orderCode: true,
-          total: true,
-          paymentStatus: true,
-          fullName: true,
-          email: true,
-          phone: true,
-        },
-      });
+        if (!order) {
+          await tx.paymentAuditLog.update({
+            where: { dedupeKey },
+            data: {
+              status: "failed",
+              errorMessage: "Order not found",
+              processedAt: new Date(),
+            },
+          });
+          return null;
+        }
 
-      if (!order) {
-        await tx.paymentAuditLog.update({
-          where: { dedupeKey },
+        if (order.paymentStatus === "paid") {
+          await tx.paymentAuditLog.update({
+            where: { dedupeKey },
+            data: {
+              status: "processed",
+              orderId: order.id,
+              processedAt: new Date(),
+              errorMessage: "Order was already marked as paid.",
+            },
+          });
+          return null;
+        }
+
+        if (
+          !Number.isFinite(amount) ||
+          amount !== order.total ||
+          (currency && currency !== "NGN")
+        ) {
+          await tx.paymentAuditLog.update({
+            where: { dedupeKey },
+            data: {
+              status: "failed",
+              errorMessage: "Amount or currency mismatch",
+              processedAt: new Date(),
+            },
+          });
+          return null;
+        }
+
+        await tx.order.update({
+          where: { id: order.id },
           data: {
-            status: "failed",
-            errorMessage: "Order not found",
-            processedAt: new Date(),
+            status: "paid",
+            paymentStatus: "paid",
+            paidAt: new Date(),
+            paymentReference: reference,
           },
         });
-        return null;
-      }
 
-      if (order.paymentStatus === "paid") {
         await tx.paymentAuditLog.update({
           where: { dedupeKey },
           data: {
             status: "processed",
             orderId: order.id,
             processedAt: new Date(),
-            errorMessage: "Order was already marked as paid.",
+            errorMessage: null,
           },
         });
-        return null;
-      }
 
-      if (
-        !Number.isFinite(amount) ||
-        amount !== order.total ||
-        (currency && currency !== "NGN")
-      ) {
-        await tx.paymentAuditLog.update({
-          where: { dedupeKey },
+        await tx.adminNotification.create({
           data: {
-            status: "failed",
-            errorMessage: "Amount or currency mismatch",
-            processedAt: new Date(),
+            title: "New paid order",
+            description: `Order ${order.orderCode} has been paid successfully.`,
+            href: "/admin/orders",
+            type: "order",
+            read: false,
           },
         });
-        return null;
-      }
 
-      await tx.order.update({
-        where: { id: order.id },
-        data: {
-          status: "paid",
-          paymentStatus: "paid",
-          paidAt: new Date(),
-          paymentReference: reference,
-        },
+        return {
+          orderCode: order.orderCode,
+          fullName: order.fullName,
+          email: order.email,
+          phone: order.phone,
+          total: order.total,
+        };
       });
-
-      await tx.paymentAuditLog.update({
-        where: { dedupeKey },
-        data: {
-          status: "processed",
-          orderId: order.id,
-          processedAt: new Date(),
-          errorMessage: null,
-        },
-      });
-
-      await tx.adminNotification.create({
-        data: {
-          title: "New paid order",
-          description: `Order ${order.orderCode} has been paid successfully.`,
-          href: "/admin/orders",
-          type: "order",
-          read: false,
-        },
-      });
-
-      return {
-        orderCode: order.orderCode,
-        fullName: order.fullName,
-        email: order.email,
-        phone: order.phone,
-        total: order.total,
-      };
-    });
 
     if (paidOrderForEmail) {
       await Promise.allSettled([
@@ -237,6 +233,24 @@ export async function POST(request: Request) {
           total: paidOrderForEmail.total,
         }),
       ]);
+
+      const results = await Promise.allSettled([
+        sendCustomerOrderEmail({
+          email: paidOrderForEmail.email,
+          fullName: paidOrderForEmail.fullName,
+          orderCode: paidOrderForEmail.orderCode,
+          total: paidOrderForEmail.total,
+        }),
+        sendAdminOrderEmail({
+          orderCode: paidOrderForEmail.orderCode,
+          customerName: paidOrderForEmail.fullName,
+          customerEmail: paidOrderForEmail.email,
+          phone: paidOrderForEmail.phone,
+          total: paidOrderForEmail.total,
+        }),
+      ]);
+
+      console.log("EMAIL RESULTS:", results);
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });
