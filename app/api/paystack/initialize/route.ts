@@ -243,6 +243,9 @@ export async function POST(request: Request) {
       include: { items: true },
     });
 
+    console.log("[checkout] app url", getAppUrl());
+console.log("[checkout] callback url", `${getAppUrl()}/paystack/callback`);
+console.log("[checkout] order code", order.orderCode);
     // ── Initialize Paystack transaction ─────────────────────────────────────
     const init = await initializePaystackTransaction({
       email: order.email,
@@ -257,6 +260,11 @@ export async function POST(request: Request) {
       },
     });
 
+    console.log("[checkout] paystack init response", {
+  authorizationUrl: init.authorization_url,
+  reference: init.reference,
+});
+
     return NextResponse.json({
       ok: true,
       authorizationUrl: init.authorization_url,
@@ -270,4 +278,6 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+  
 }
+
