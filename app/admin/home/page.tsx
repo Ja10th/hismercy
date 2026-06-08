@@ -47,7 +47,7 @@ export default async function HomeProductsPage({
 
   return (
     <div className="min-h-screen bg-[#f6f7fb] text-neutral-950">
-      <div className="mx-auto max-w-[1600px] px-4 pt-9 pb-3 sm:px-6 lg:px-2">
+      <div className="mx-auto max-w-[1600px] px-4 pt-9 pb-0 sm:px-6 lg:px-2">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-2">
             <div>
@@ -64,7 +64,7 @@ export default async function HomeProductsPage({
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href="/shop"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-emerald-700 px-4 text-xs font-medium text-white transition hover:border-neutral-300 hover:bg-emerald-800"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-emerald-700 px-4 text-sm font-medium text-white transition hover:border-neutral-300 hover:bg-emerald-800"
             >
               <Eye className="h-4 w-4" />
               Preview Homepage

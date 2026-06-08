@@ -196,7 +196,7 @@ export default async function AdminOrdersPage({
             <div className="flex flex-wrap items-center gap-2 xl:justify-end">
               <Link
                 href={buildHref({ q, payment: "all", status: "all" })}
-                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition ${
                   !activeFilters
                     ? "border-neutral-300 bg-neutral-100 text-neutral-900"
                     : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
@@ -208,7 +208,7 @@ export default async function AdminOrdersPage({
 
               <Link
                 href={buildHref({ q, payment: "paid", status })}
-                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition ${
                   payment === "paid"
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
@@ -221,7 +221,7 @@ export default async function AdminOrdersPage({
 
               <Link
                 href={buildHref({ q, payment: "pending", status })}
-                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition ${
                   payment === "pending"
                     ? "border-amber-200 bg-amber-50 text-amber-700"
                     : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
@@ -234,7 +234,7 @@ export default async function AdminOrdersPage({
 
               <Link
                 href={buildHref({ q, payment, status: "on_the_way" })}
-                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition ${
                   status === "on_the_way"
                     ? "border-sky-200 bg-sky-50 text-sky-700"
                     : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"
@@ -247,7 +247,7 @@ export default async function AdminOrdersPage({
 
               <Link
                 href={buildHref({ q, payment, status: "delivered" })}
-                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-medium transition ${
+                className={`inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-medium transition ${
                   status === "delivered"
                     ? "border-violet-200 bg-violet-50 text-violet-700"
                     : "border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50"

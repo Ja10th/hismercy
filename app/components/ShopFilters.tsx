@@ -20,7 +20,7 @@ type ShopFiltersProps = {
 function buildHref(
   pathname: string,
   currentParams: URLSearchParams,
-  updates: Record<string, string | undefined>
+  updates: Record<string, string | undefined>,
 ) {
   const params = new URLSearchParams(currentParams.toString());
 
@@ -30,11 +30,17 @@ function buildHref(
   }
 
   params.delete("page");
+
   const stringified = params.toString();
   return stringified ? `${pathname}?${stringified}` : pathname;
 }
 
-export default function ShopFilters({ brands, q, brand, sort }: ShopFiltersProps) {
+export default function ShopFilters({
+  brands,
+  q,
+  brand,
+  sort,
+}: ShopFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,37 +52,48 @@ export default function ShopFilters({ brands, q, brand, sort }: ShopFiltersProps
     setSearchValue(q);
   }, [q]);
 
+  const searchParamsString = searchParams.toString();
+
   const currentParams = useMemo(
-    () => new URLSearchParams(searchParams.toString()),
-    [searchParams]
+    () => new URLSearchParams(searchParamsString),
+    [searchParamsString],
   );
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
-      const next = new URLSearchParams(currentParams.toString());
       const trimmed = searchValue.trim();
+      const next = new URLSearchParams(currentParams.toString());
 
       if (trimmed) next.set("q", trimmed);
       else next.delete("q");
 
       next.delete("page");
 
-      const href = next.toString() ? `${pathname}?${next.toString()}` : pathname;
-      router.replace(href);
+      const nextHref = next.toString() ? `${pathname}?${next.toString()}` : pathname;
+      const currentHref =
+        window.location.pathname + window.location.search;
+
+      if (nextHref !== currentHref) {
+        router.replace(nextHref, { scroll: false });
+      }
     }, 350);
 
     return () => window.clearTimeout(handle);
-  }, [searchValue, router, pathname, currentParams]);
+  }, [searchValue, currentParams, pathname, router]);
 
   const updateSort = (value: string) => {
     startTransition(() => {
       const next = new URLSearchParams(currentParams.toString());
+
       if (value && value !== "featured") next.set("sort", value);
       else next.delete("sort");
+
       next.delete("page");
 
       const href = next.toString() ? `${pathname}?${next.toString()}` : pathname;
-      router.push(href);
+      if (href !== window.location.pathname + window.location.search) {
+        router.push(href, { scroll: false });
+      }
     });
   };
 
@@ -90,7 +107,7 @@ export default function ShopFilters({ brands, q, brand, sort }: ShopFiltersProps
   return (
     <div className="z-20 -mx-4 px-4 py-4 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
-        <div className="flex flex-1 items-center gap-2 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <input
@@ -112,13 +129,13 @@ export default function ShopFilters({ brands, q, brand, sort }: ShopFiltersProps
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           <div className="relative">
             <ArrowUpDown className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
             <select
               value={sort}
               onChange={(e) => updateSort(e.target.value)}
-              className="h-10 appearance-none rounded-xl border border-neutral-200 bg-white pl-9 pr-8 text-sm outline-none transition focus:border-neutral-950 cursor-pointer"
+              className="h-10 cursor-pointer appearance-none rounded-xl border border-neutral-200 bg-white pl-9 pr-8 text-sm outline-none transition focus:border-neutral-950"
             >
               <option value="featured">Featured</option>
               <option value="price_asc">Price: Low → High</option>
@@ -145,7 +162,7 @@ export default function ShopFilters({ brands, q, brand, sort }: ShopFiltersProps
           })}
           className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
             !brand
-              ? " bg-emerald-700 text-white"
+              ? "bg-emerald-700 text-white"
               : "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-400"
           }`}
         >

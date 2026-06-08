@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Package, Tag } from "lucide-react";
 import { useCart } from "./cart/CartProvider";
 import { MdOutlineStar } from "react-icons/md";
 
@@ -68,9 +67,9 @@ export default function ShopProducts({ products }: ShopProductsProps) {
 
               <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                 {product.featured ? (
-                 <span className="absolute left-4 top-4 rounded-full font-medium text-white">
-                             <MdOutlineStar className="h-7 w-7 text-yellow-500" />
-                           </span>
+                  <span className="absolute left-4 top-4 rounded-full font-medium text-white">
+                    <MdOutlineStar className="h-7 w-7 text-yellow-500" />
+                  </span>
                 ) : null}
 
                 {!product.inStock ? (
@@ -96,27 +95,12 @@ export default function ShopProducts({ products }: ShopProductsProps) {
                       {product.name}
                     </h3>
                   </div>
-
-                  <span className="shrink-0 text-[20px] md:text-2xl font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white">
-                    {priceLabel}
-                  </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-sm text-neutral-600  group-hover:text-white/85 group-focus-within:text-white/85 group-active:text-white/85">
-                      <Package className="h-4 w-4" />
-                      {product.inStock
-                        ? `In stock${product.stockCount > 0 ? ` (${product.stockCount})` : ""}`
-                        : "Out of stock"}
-                    </span>
-
-                    <span className="inline-flex items-center gap-2 text-sm text-neutral-500 group-hover:text-white/80 group-focus-within:text-white/80 group-active:text-white/80">
-                      <Tag className="h-3.5 w-3.5 shrink-0" />
-                      <span>{product.brand?.name || "No brand"}</span>
-                    </span>
-                  </div>
-
+                  <span className="shrink-0 text-[20px] md:text-2xl font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white">
+                    {priceLabel}
+                  </span>
                   <button
                     type="button"
                     disabled={!product.inStock}

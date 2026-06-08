@@ -36,22 +36,28 @@ export async function POST(request: Request) {
     if (!customer?.fullName || !customer?.email || !customer?.phone) {
       return NextResponse.json(
         { ok: false, error: "Missing customer information" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { ok: false, error: "Cart is empty" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const orderCode = `ORD-${randomUUID().slice(0, 8).toUpperCase()}`;
+    const email = customer.email.toLowerCase().trim();
 
     const result = await prisma.$transaction(async (tx) => {
+      const existingCustomer = await tx.customer.findUnique({
+        where: { email },
+        select: { id: true },
+      });
+
       const savedCustomer = await tx.customer.upsert({
-        where: { email: customer.email.toLowerCase() },
+        where: { email },
         update: {
           fullName: customer.fullName,
           phone: customer.phone,
@@ -62,7 +68,7 @@ export async function POST(request: Request) {
         },
         create: {
           fullName: customer.fullName,
-          email: customer.email.toLowerCase(),
+          email,
           phone: customer.phone,
           street: customer.street,
           city: customer.city,
@@ -77,7 +83,7 @@ export async function POST(request: Request) {
           customerId: savedCustomer.id,
 
           fullName: customer.fullName,
-          email: customer.email.toLowerCase(),
+          email,
           phone: customer.phone,
           street: customer.street,
           city: customer.city,
@@ -90,6 +96,8 @@ export async function POST(request: Request) {
           deliveryFee,
           total,
           status: "pending",
+          paymentStatus: "pending",
+
           items: {
             create: items.map((item) => ({
               productId: item.id,
@@ -99,6 +107,7 @@ export async function POST(request: Request) {
               image: item.image || item.imageUrl || "/bags.png",
             })),
           },
+
           history: {
             create: {
               status: "pending",
@@ -110,6 +119,26 @@ export async function POST(request: Request) {
           items: true,
         },
       });
+
+      await tx.adminNotification.create({
+        data: {
+          title: "New order received",
+          description: `${order.fullName} placed ${order.orderCode}`,
+          href: `/admin/orders/${order.orderCode}`,
+          type: "order",
+        },
+      });
+
+      if (!existingCustomer) {
+        await tx.adminNotification.create({
+          data: {
+            title: "New customer added",
+            description: savedCustomer.fullName,
+            href: `/admin/customers/${savedCustomer.id}`,
+            type: "customer",
+          },
+        });
+      }
 
       return order;
     });
@@ -135,7 +164,7 @@ export async function POST(request: Request) {
     console.error(error);
     return NextResponse.json(
       { ok: false, error: "Could not create order" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

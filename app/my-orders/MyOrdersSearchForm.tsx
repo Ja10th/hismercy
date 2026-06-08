@@ -25,7 +25,7 @@ export default function MyOrdersSearchForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="mb-2 block text-sm font-medium text-neutral-700">
           Email
@@ -57,23 +57,25 @@ export default function MyOrdersSearchForm() {
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-4 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        {loading ? (
-          <>
-            <LoaderCircle className="h-4 w-4 animate-spin" />
-            Searching...
-          </>
-        ) : (
-          <>
-            <Search className="h-4 w-4" />
-            View order
-          </>
-        )}
-      </button>
+      <div className="w-full ">
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-700 px-4 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {loading ? (
+            <>
+              <LoaderCircle className="h-4 w-4 animate-spin" />
+              Searching...
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" />
+              View order
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }

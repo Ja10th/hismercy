@@ -208,7 +208,7 @@ export default async function AdminOrderPage({
             </p>
           </div>
 
-         <OrderActions orderCode={order.orderCode} />
+          <OrderActions orderCode={order.orderCode} />
         </div>
 
         <section className="overflow-hidden rounded-[18px] border border-neutral-200 bg-white">
@@ -396,13 +396,6 @@ export default async function AdminOrderPage({
                 {order.notes || "No notes added."}
               </p>
             </div>
-
-            <button
-              type="button"
-              className="rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-xs font-medium text-neutral-900 hover:bg-neutral-100"
-            >
-              Add note
-            </button>
           </div>
         </section>
       </div>

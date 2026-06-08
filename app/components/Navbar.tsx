@@ -11,7 +11,6 @@ import {
   CircleHelp,
   Minus,
   Plus,
-  Search,
   Trash2,
   UserRound,
   X,
@@ -66,7 +65,7 @@ function ProfileDropdown() {
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex items-center gap-2 rounded-xl py-2.5 px-2 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-white/20"
+        className="inline-flex items-center gap-2 rounded-xl px-2 py-2.5 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-white/20"
       >
         <UserRound className="h-4 w-4" />
         <ChevronDown className="h-4 w-4 opacity-80" />
@@ -299,40 +298,57 @@ export default function Navbar() {
                       </button>
 
                       <div className="min-w-0 flex-1">
-                        <button
-                          type="button"
-                          onClick={() => router.push(`/shop/${item.slug}`)}
-                          className="block w-full truncate text-left text-sm font-medium text-neutral-950 hover:underline"
-                        >
-                          {item.name}
-                        </button>
-
-                        <div className="mt-3 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-1 text-sm text-neutral-500">
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/shop/${item.slug}`)}
+                            className="block w-full truncate text-left text-sm font-medium text-neutral-950 hover:underline"
+                          >
+                            {item.name}
+                          </button>
                           <p className="mt-1 text-sm text-neutral-500">
                             {formatNaira(item.price)}
                           </p>
+                        </div>
 
-                          <div className="inline-flex items-center rounded-full bg-[#f3f3f1] p-1">
+                        <div className="mt-3 flex items-center justify-between gap-1">
+                          <div className="inline-flex items-center rounded-full  p-1">
                             <button
                               type="button"
                               onClick={() =>
                                 updateQuantity(item.id, item.qty - 1)
                               }
-                              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-700 transition hover:bg-white"
+                              className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-[#F7F7F7] text-neutral-700 transition hover:bg-white"
                             >
                               <Minus className="h-4 w-4" />
                             </button>
 
-                            <span className="min-w-9 px-2 text-center text-sm font-medium text-neutral-950">
-                              {item.qty}
-                            </span>
+                            <input
+                              type="number"
+                              min={1}
+                              value={item.qty}
+                              onChange={(e) => {
+                                const next = Number(e.target.value);
+                                if (e.target.value === "") return;
+                                if (Number.isNaN(next)) return;
+                                updateQuantity(item.id, Math.max(1, next));
+                              }}
+                              onBlur={() => {
+                                if (!item.qty || item.qty < 1) {
+                                  updateQuantity(item.id, 1);
+                                }
+                              }}
+                              inputMode="numeric"
+                              className="h-8 w-14 rounded-full text-center text-sm  text-neutral-950 outline-none [appearance:textfield] focus:border-neutral-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                              aria-label={`Quantity for ${item.name}`}
+                            />
 
                             <button
                               type="button"
                               onClick={() =>
                                 updateQuantity(item.id, item.qty + 1)
                               }
-                              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-700 transition hover:bg-white"
+                              className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-[#F7F7F7] text-neutral-700 transition hover:bg-white"
                             >
                               <Plus className="h-4 w-4" />
                             </button>
@@ -368,7 +384,7 @@ export default function Navbar() {
                         setCartOpen(false);
                         router.push("/checkout");
                       }}
-                      className="flex-1 rounded-full bg-neutral-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-neutral-800"
+                      className="flex-1 rounded-full bg-emerald-700 px-4 py-3 text-sm font-medium text-white transition hover:bg-emerald-800"
                     >
                       Checkout
                     </button>
@@ -471,13 +487,7 @@ export default function Navbar() {
                 className="inline-flex w-full items-center justify-between rounded-2xl bg-white px-4 py-3 text-sm font-medium text-neutral-950"
               >
                 <span className="inline-flex items-center gap-2">
-                  <Image
-                    src={assets.cartIcon}
-                    alt=""
-                    width={18}
-                    height={18}
-                    className=""
-                  />
+                  <Image src={assets.cartIcon} alt="" width={18} height={18} />
                   View Cart
                 </span>
                 <span className="rounded-full bg-neutral-950 px-2.5 py-1 text-xs text-white">

@@ -89,33 +89,20 @@ export default async function BlogPage({
       <Navbar />
       <main className="min-h-screen bg-white">
         <section className="relative overflow-hidden border-b border-neutral-200 bg-white">
-          <div className="mx-auto max-w-[1280px] px-8 pb-16 pt-32 md:pt-32 md:pb-32">
-            <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-              <div>
-                <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-emerald-600">
-                  Our Blog
-                </p>
+          <div className="mx-auto max-w-7xl px-8 pb-5 pt-32 md:pt-32 md:pb-10">
+            <div>
+              <p className="text-xs md:text-sm text-center uppercase tracking-[0.2em] text-emerald-600">
+                Our Blog
+              </p>
 
-                <h1 className="mt-4 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-                  Stay Informed.
-                </h1>
+              <h1 className="mt-4 text-4xl font-semibold text-center tracking-tight text-neutral-950 md:text-5xl">
+                Stay Informed.
+              </h1>
 
-                <p className="mt-5 max-w-2xl text-base leading-7 text-neutral-600 md:text-lg">
-                  Insights, tips, and stories to help your business grow, make
-                  better decisions, and stay ahead.
-                </p>
-              </div>
-
-              <div className="relative hidden h-[220px] items-center justify-center lg:flex">
-                <div className="absolute inset-0 rounded-[2rem] bg-emerald-50/60 blur-3xl" />
-                <div className="relative h-[180px] w-[320px] rounded-[2rem] border border-neutral-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
-                  <div className="absolute left-8 top-8 h-14 w-14 rounded-2xl bg-neutral-100" />
-                  <div className="absolute left-28 top-6 h-2 w-36 rounded-full bg-neutral-200" />
-                  <div className="absolute left-28 top-12 h-2 w-28 rounded-full bg-neutral-200" />
-                  <div className="absolute left-28 top-18 h-2 w-24 rounded-full bg-neutral-200" />
-                  <div className="absolute right-7 top-22 h-12 w-12 rounded-[1rem] bg-emerald-500" />
-                </div>
-              </div>
+              <p className="mt-5 max-w-2xl mx-auto text-base leading-7 text-center text-neutral-600 md:text-lg">
+                Insights, tips, and stories to help your business grow, make
+                better decisions, and stay ahead.
+              </p>
             </div>
           </div>
         </section>

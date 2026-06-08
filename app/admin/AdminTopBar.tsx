@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Bell,
   Box,
   CalendarDays,
   CheckCheck,
@@ -18,10 +17,11 @@ import {
   ShoppingCart,
   Sparkles,
   Tag,
-  Trash2,
   Users,
   X,
 } from "lucide-react";
+import { HiMiniBell } from "react-icons/hi2";
+import { FaUserLarge } from "react-icons/fa6";
 
 type SearchItem = {
   id: string;
@@ -338,12 +338,12 @@ export function AdminTopBar() {
                   setUserOpen(false);
                   setSearchModalOpen(false);
                 }}
-                className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50"
+                className="relative inline-flex h-11  items-center justify-center rounded-2xl  text-neutral-800 transition hover:bg-neutral-50"
                 aria-label="Notifications"
               >
-                <Bell className="h-5 w-5" />
+                <HiMiniBell className="h-5 w-5" />
                 {unreadCount > 0 ? (
-                  <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500" />
+                  <span className="absolute right-0 top-2 h-2 w-2 rounded-full bg-rose-500" />
                 ) : null}
               </button>
 
@@ -354,9 +354,6 @@ export function AdminTopBar() {
                       <p className="text-sm font-semibold text-neutral-950">
                         Notifications
                       </p>
-                      <p className="text-xs text-neutral-500">
-                        Orders, blog posts, and system updates
-                      </p>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -366,7 +363,14 @@ export function AdminTopBar() {
                         className="inline-flex items-center gap-1 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
                       >
                         <CheckCheck className="h-3.5 w-3.5" />
-                        Mark all read
+                      </button>{" "}
+                      <button
+                        type="button"
+                        onClick={clearNotifications}
+                        className="inline-flex items-center gap-1 rounded-full border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Clear
                       </button>
                     </div>
                   </div>
@@ -477,10 +481,10 @@ export function AdminTopBar() {
                   setNotifOpen(false);
                   setSearchModalOpen(false);
                 }}
-                className="inline-flex h-11 items-center gap-2 rounded-2xl border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+                className="inline-flex h-11 items-center gap-2 rounded-2xl px-1 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
                 aria-label="Account menu"
               >
-                <CircleUserRound className="h-5 w-5 text-emerald-700" />
+                <FaUserLarge className="h-4 w-4 text-emerald-700" />
               </button>
 
               <button
@@ -493,7 +497,7 @@ export function AdminTopBar() {
               </button>
 
               {userOpen ? (
-                <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-lg">
+                <div className="absolute right-40 top-full mt-2 w-80 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-lg">
                   <div className="border-b border-neutral-100 px-4 py-3">
                     <p className="text-sm font-semibold text-neutral-950">
                       Admin account
@@ -528,7 +532,7 @@ export function AdminTopBar() {
                       Profile
                     </Link>
 
-                    <form action="/admin/logout" method="post">
+                    <form action="/api/admin/logout" method="post">
                       <button
                         type="submit"
                         className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-left text-sm text-red-600 hover:bg-red-50"

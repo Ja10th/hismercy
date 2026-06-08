@@ -148,20 +148,20 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     <>
       <Navbar />
 
-      <main className="bg-white pt-[72px]">
+      <main className="bg-white pt-18">
         <section className="py-8 sm:py-12 lg:py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-6">
-            <div className="mb-4 flex flex-col items-center gap-1 sm:gap-4 sm:flex-row sm:justify-between">
+          <div className="mx-auto max-w-7xl px-5 md:px-10">
+            <div className="flex flex-col items-center gap-1 sm:gap-4 sm:flex-row sm:justify-between">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-[13px] font-medium text-primary">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                 Shop
               </div>
 
-              <h1 className="mt-4 text-center text-3xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
+              <h1 className="text-center text-3xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
                 Browse the full collection.
               </h1>
 
-              <p className="mt-4 text-center text-[16px] leading-7 text-neutral-500 sm:text-base">
+              <p className="text-center text-[16px] leading-7 text-neutral-500 sm:text-base">
                 Search products, filter by brand, and shop in naira.
               </p>
             </div>

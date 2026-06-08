@@ -133,7 +133,7 @@ function SortableProductRow({
             {...attributes}
             {...listeners}
           >
-            <GripVertical className="h-7 w-7" />
+            <GripVertical className="h-4 w-4" />
           </button>
         </div>
 
@@ -205,7 +205,7 @@ function SortableProductRow({
           <button
             type="submit"
             formAction={removeHomepageProduct}
-            className="flex h-12 w-14 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50"
+            className="flex h-12 w-14 items-center justify-center rounded-xl  text-neutral-600 transition hover:bg-neutral-100"
             aria-label="Remove from homepage"
           >
             <Trash2 className="h-4 w-4" />

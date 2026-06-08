@@ -36,12 +36,21 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
+  await prisma.blogPost.update({
+    where: { id: post.id },
+    data: {
+      views: {
+        increment: 1,
+      },
+    },
+  });
+
   const publishedDate = post.publishedAt || post.createdAt;
 
   return (
     <>
       <Navbar />
-      <main className="">
+      <main>
         <section className="py-24 md:py-32">
           <div className="mx-auto max-w-[960px] px-8">
             <Link
@@ -58,13 +67,13 @@ export default async function BlogPostPage({
                 {post.category || "Blog"}
               </span>
 
-              <span className="inline-flex items-center gap-2 text-[13px] ">
+              <span className="inline-flex items-center gap-2 text-[13px] text-gray-600">
                 <CalendarDays className="h-3.5 w-3.5" />
                 {formatDate(publishedDate)}
               </span>
             </div>
 
-            <h1 className="max-w-4xl text-3xl   sm:text-[72px] lg:text-5xl">
+            <h1 className="max-w-4xl text-3xl sm:text-5xl lg:text-5xl">
               {post.title}
             </h1>
 
@@ -87,7 +96,7 @@ export default async function BlogPostPage({
             <article className="prose prose-neutral mt-10 max-w-none rounded-[20px] px-2 py-8 text-gray-600">
               <div
                 dangerouslySetInnerHTML={{ __html: post.content }}
-                className="[&_h1]:font-serif [&_h1]:text-4xl [&_h1]:tracking-[-0.04em] [&_h1]:text-gray-600 [&_h2]:font-serif [&_h2]:text-3xl [&_h2]:tracking-[-0.04em] [&_h2]:text-gray-600 [&_h3]:font-serif [&_h3]:text-2xl [&_h3]:tracking-[-0.03em] [&_h3]:text-gray-600 [&_p]:my-5 [&_img]:my-8 [&_img]:w-full [&_img]:rounded-[20px] [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-5 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-gray-600 [&_a]:underline"
+                className="[&_h1]:text-4xl [&_h1]:tracking-[-0.04em] [&_h1]:text-gray-600 [&_h2]:text-3xl [&_h2]:tracking-[-0.04em] [&_h2]:text-gray-600 [&_h3]:text-2xl [&_h3]:tracking-[-0.03em] [&_h3]:text-gray-600 [&_p]:my-5 [&_img]:my-8 [&_img]:w-full [&_img]:rounded-[20px] [&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-5 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-gray-600 [&_a]:underline"
               />
             </article>
           </div>

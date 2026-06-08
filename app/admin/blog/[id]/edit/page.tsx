@@ -58,37 +58,35 @@ export default async function EditBlogPostPage({
             <div>
               <Link
                 href="/admin/blog"
-                className="inline-flex items-center gap-2 text-sm font-medium text-neutral-900 hover:opacity-80"
+                className="inline-flex items-center gap-2 text-xs font-medium text-neutral-900 hover:opacity-80"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to blog
               </Link>
 
-              <h1 className="mt-4 text-[24px] font-semibold tracking-tight text-neutral-950">
+              <h1 className="mt-4 ml-2 text-[24px] font-semibold tracking-tight text-neutral-950">
                 Edit post
               </h1>
-
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-medium text-neutral-700">
-                  {statusLabel}
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className=" px-3 py-1 text-xs font-medium text-emerald-700">
+                {statusLabel}
+              </span>
+              {successLabel ? (
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
+                  {successLabel}
                 </span>
-
-                {successLabel ? (
-                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
-                    {successLabel}
-                  </span>
-                ) : null}
-              </div>
+              ) : null}
             </div>
 
             <form action={deleteBlogPost}>
               <input type="hidden" name="id" value={post.id} />
               <button
                 type="submit"
-                className="inline-flex h-12 items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 text-sm font-medium text-red-600 transition hover:bg-red-100"
+                className="inline-flex h-12 items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 text-xs font-medium text-red-600 transition hover:bg-red-100"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete post
+                Delete
               </button>
             </form>
           </div>

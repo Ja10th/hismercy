@@ -90,6 +90,18 @@ const groups = [
       },
     ],
   },
+  {
+    label: "Logs",
+    items: [
+      {
+        href: "/admin/audit-log",
+        label: "Audit Log",
+        icon: FileText,
+        accent: "text-emerald-400",
+        accentBg: "bg-emerald-500/10",
+      },
+    ],
+  },
 ] as const;
 
 type NavIcon = (typeof groups)[number]["items"][number]["icon"];

@@ -20,7 +20,7 @@ export default function Footer() {
           className="object-cover opacity-15"
           priority={false}
         />
-        <div className="absolute inset-0 bg-[#171717]/40" />
+        <div className="absolute inset-0 bg-emerald-950/40" />
       </div>
 
       <div className="relative z-10">

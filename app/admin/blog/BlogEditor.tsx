@@ -86,17 +86,21 @@ function ActionButtons({
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white px-4 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <PenLine className="h-4 w-4" />
-        {pending ? "Saving..." : mode === "create" ? "Save draft" : "Save changes"}
+        {pending
+          ? "Saving..."
+          : mode === "create"
+            ? "Save draft"
+            : "Save changes"}
       </button>
 
       <button
         type="submit"
         formAction={publishAction}
         disabled={pending}
-        className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-neutral-950 px-4 text-sm font-medium text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-emerald-700 px-4 text-xs font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <Save className="h-4 w-4" />
         {pending ? "Publishing..." : "Publish"}
@@ -141,7 +145,7 @@ export default function BlogStudioEditor({
     editorProps: {
       attributes: {
         class:
-          "min-h-[620px] rounded-[26px] border border-neutral-200 bg-white px-4 py-4 text-[15px] leading-7 outline-none focus:border-neutral-400 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:tracking-tight [&_h2]:mb-3 [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:my-3 [&_img]:my-4 [&_img]:w-full [&_img]:rounded-2xl [&_blockquote]:border-l-4 [&_blockquote]:border-neutral-200 [&_blockquote]:pl-4 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5",
+          "h-[620px] overflow-y-auto rounded-[26px] border border-neutral-200 bg-white px-4 py-4 text-[15px] leading-7 outline-none focus:border-neutral-400 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:tracking-tight [&_h2]:mb-3 [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:my-3 [&_img]:my-4 [&_img]:w-full [&_img]:rounded-2xl [&_blockquote]:border-l-4 [&_blockquote]:border-neutral-200 [&_blockquote]:pl-4 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5",
       },
     },
     onUpdate: ({ editor }) => {
@@ -210,14 +214,13 @@ export default function BlogStudioEditor({
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   };
 
-  const currentBlock =
-    editor?.isActive("heading", { level: 1 })
-      ? "h1"
-      : editor?.isActive("heading", { level: 2 })
-        ? "h2"
-        : editor?.isActive("heading", { level: 3 })
-          ? "h3"
-          : "paragraph";
+  const currentBlock = editor?.isActive("heading", { level: 1 })
+    ? "h1"
+    : editor?.isActive("heading", { level: 2 })
+      ? "h2"
+      : editor?.isActive("heading", { level: 3 })
+        ? "h3"
+        : "paragraph";
 
   const setBlockType = (value: string) => {
     if (!editor) return;
@@ -263,7 +266,7 @@ export default function BlogStudioEditor({
             </div>
 
             <div className="p-5">
-              <div className="rounded-[26px] border border-neutral-200 bg-neutral-50 p-3">
+              <div className="mb-4 flex items-center justify-between">
                 <div className="flex flex-wrap gap-2">
                   <select
                     value={currentBlock}
@@ -292,21 +295,27 @@ export default function BlogStudioEditor({
 
                   <ToolbarButton
                     active={editor?.isActive("bulletList")}
-                    onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                    onClick={() =>
+                      editor?.chain().focus().toggleBulletList().run()
+                    }
                   >
                     <List className="h-4 w-4" />
                   </ToolbarButton>
 
                   <ToolbarButton
                     active={editor?.isActive("orderedList")}
-                    onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                    onClick={() =>
+                      editor?.chain().focus().toggleOrderedList().run()
+                    }
                   >
                     <ListOrdered className="h-4 w-4" />
                   </ToolbarButton>
 
                   <ToolbarButton
                     active={editor?.isActive("blockquote")}
-                    onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+                    onClick={() =>
+                      editor?.chain().focus().toggleBlockquote().run()
+                    }
                   >
                     <Quote className="h-4 w-4" />
                   </ToolbarButton>
@@ -315,7 +324,9 @@ export default function BlogStudioEditor({
                     <Link2 className="h-4 w-4" />
                   </ToolbarButton>
 
-                  <ToolbarButton onClick={() => bodyImageInputRef.current?.click()}>
+                  <ToolbarButton
+                    onClick={() => bodyImageInputRef.current?.click()}
+                  >
                     <ImagePlus className="h-4 w-4" />
                   </ToolbarButton>
 
@@ -327,11 +338,15 @@ export default function BlogStudioEditor({
                     <Trash2 className="h-4 w-4" />
                   </ToolbarButton>
 
-                  <ToolbarButton onClick={() => editor?.chain().focus().undo().run()}>
+                  <ToolbarButton
+                    onClick={() => editor?.chain().focus().undo().run()}
+                  >
                     <Undo2 className="h-4 w-4" />
                   </ToolbarButton>
 
-                  <ToolbarButton onClick={() => editor?.chain().focus().redo().run()}>
+                  <ToolbarButton
+                    onClick={() => editor?.chain().focus().redo().run()}
+                  >
                     <Redo2 className="h-4 w-4" />
                   </ToolbarButton>
                 </div>
@@ -354,7 +369,7 @@ export default function BlogStudioEditor({
           </div>
         </section>
 
-        <aside className="space-y-5 xl:sticky xl:top-6 xl:self-start">
+        <aside className="space-y-5 xl:sticky xl:top-0 xl:self-start xl:h-[780px] xl:overflow-y-auto">
           <div className="rounded-[28px] border border-neutral-200 bg-white p-5 shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
             <div className="mb-4 text-sm font-medium text-neutral-900">
               Document
@@ -452,10 +467,6 @@ export default function BlogStudioEditor({
               className="mt-2 h-12 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition focus:border-neutral-400 focus:bg-white"
             />
 
-            <div className="mt-4 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-500">
-              Use scheduled if the post should go live later.
-            </div>
-
             <ActionButtons mode={mode} publishAction={publishAction} />
           </div>
 
@@ -468,19 +479,9 @@ export default function BlogStudioEditor({
               name="coverImage"
               type="file"
               accept="image/*"
-              className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-neutral-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white"
+              className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-xs file:mr-4 file:rounded-full file:border-0 file:bg-emerald-700 file:px-4 file:py-2 file:text-xs file:font-medium file:text-white"
               onChange={handleCoverPick}
             />
-
-            {coverPreview ? (
-              <div className="mt-4 overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50">
-                <img
-                  src={coverPreview}
-                  alt="Cover preview"
-                  className="h-40 w-full object-cover"
-                />
-              </div>
-            ) : null}
           </div>
         </aside>
       </div>

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { z } from "zod";
+
 type InitPayload = {
   email: string;
   amount: number;
@@ -8,17 +10,31 @@ type InitPayload = {
   metadata?: Record<string, unknown>;
 };
 
-type VerifyResponse = {
-  status: boolean;
-  message: string;
-  data?: {
-    reference: string;
-    status: string;
-    amount: number;
-    currency: string;
-    gateway_response?: string;
-  };
-};
+const initializeResponseSchema = z.object({
+  status: z.boolean(),
+  message: z.string(),
+  data: z
+    .object({
+      authorization_url: z.string().url(),
+      access_code: z.string(),
+      reference: z.string(),
+    })
+    .optional(),
+});
+
+const verifyResponseSchema = z.object({
+  status: z.boolean(),
+  message: z.string(),
+  data: z
+    .object({
+      reference: z.string(),
+      status: z.string(),
+      amount: z.number(),
+      currency: z.string(),
+      gateway_response: z.string().optional(),
+    })
+    .optional(),
+});
 
 function getSecretKey() {
   const key = process.env.PAYSTACK_SECRET_KEY;
@@ -29,56 +45,89 @@ function getSecretKey() {
 export function getAppUrl() {
   return (
     process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000")
   );
 }
 
-export async function initializePaystackTransaction(payload: InitPayload) {
-  const response = await fetch("https://api.paystack.co/transaction/initialize", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getSecretKey()}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: payload.email,
-      amount: payload.amount,
-      reference: payload.reference,
-      callback_url: payload.callbackUrl,
-      metadata: payload.metadata || {},
-    }),
-  });
+async function fetchWithTimeout(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs = 15000,
+) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-  const json = (await response.json()) as {
-    status: boolean;
-    message: string;
-    data?: {
-      authorization_url: string;
-      access_code: string;
-      reference: string;
-    };
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+      cache: "no-store",
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function initializePaystackTransaction(payload: InitPayload) {
+  const safePayload = {
+    email: payload.email.trim().toLowerCase(),
+    amount: Math.trunc(payload.amount),
+    reference: payload.reference.trim(),
+    callback_url: payload.callbackUrl,
+    metadata: payload.metadata || {},
   };
 
-  if (!response.ok || !json.status || !json.data?.authorization_url) {
-    throw new Error(json.message || "Could not initialize Paystack transaction");
+  const response = await fetchWithTimeout(
+    "https://api.paystack.co/transaction/initialize",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getSecretKey()}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(safePayload),
+    },
+  );
+
+  const json = initializeResponseSchema.safeParse(await response.json());
+
+  if (!response.ok || !json.success || !json.data.status || !json.data.data?.authorization_url) {
+    throw new Error(
+      json.success ? json.data.message : "Could not initialize Paystack transaction",
+    );
   }
 
-  return json.data;
+  return json.data.data;
 }
 
 export async function verifyPaystackTransaction(reference: string) {
-  const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${getSecretKey()}`,
-    },
-  });
+  const cleanReference = reference.trim();
 
-  const json = (await response.json()) as VerifyResponse;
-
-  if (!response.ok || !json.status || !json.data) {
-    throw new Error(json.message || "Could not verify Paystack transaction");
+  if (!cleanReference) {
+    throw new Error("Missing transaction reference");
   }
 
-  return json.data;
+  const response = await fetchWithTimeout(
+    `https://api.paystack.co/transaction/verify/${encodeURIComponent(cleanReference)}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${getSecretKey()}`,
+        Accept: "application/json",
+      },
+    },
+  );
+
+  const json = verifyResponseSchema.safeParse(await response.json());
+
+  if (!response.ok || !json.success || !json.data.status || !json.data.data) {
+    throw new Error(
+      json.success ? json.data.message : "Could not verify Paystack transaction",
+    );
+  }
+
+  return json.data.data;
 }

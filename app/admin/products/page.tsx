@@ -425,7 +425,7 @@ function AddProductModal({ brands }: { brands: BrandOption[] }) {
 
       <label
         htmlFor={modalId}
-        className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-xs font-medium text-white shadow-sm transition hover:bg-neutral-800"
+        className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-800"
       >
         <Plus className="h-4 w-4" />
         Add Product

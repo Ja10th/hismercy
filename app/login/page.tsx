@@ -49,7 +49,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <>
       <Navbar />
       <main className="flex min-h-screen items-center justify-center bg-[#171717] px-4 py-10">
-        <div className="w-full max-w-md rounded-[32px] border border-neutral-200 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] sm:p-8">
+        <div className="w-full max-w-md rounded-4xl border border-neutral-200 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] sm:p-8">
           <div className="flex items-center justify-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-700 text-white">
               <LockKeyhole className="h-5 w-5" />

@@ -91,3 +91,18 @@ export type OrderStatusHistory = Prisma.OrderStatusHistoryModel
  * 
  */
 export type BlogPost = Prisma.BlogPostModel
+/**
+ * Model AdminNotification
+ * 
+ */
+export type AdminNotification = Prisma.AdminNotificationModel
+/**
+ * Model PaymentAuditLog
+ * 
+ */
+export type PaymentAuditLog = Prisma.PaymentAuditLogModel
+/**
+ * Model AppSetting
+ * 
+ */
+export type AppSetting = Prisma.AppSettingModel

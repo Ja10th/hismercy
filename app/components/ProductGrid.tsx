@@ -100,27 +100,12 @@ export default function ProductGrid({
                       {product.name}
                     </h3>
                   </div>
-
-                  <span className="shrink-0 text-[20px] font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white md:text-2xl">
-                    {priceLabel}
-                  </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-sm text-neutral-600 group-hover:text-white/85 group-focus-within:text-white/85 group-active:text-white/85">
-                      <Package className="h-4 w-4" />
-                      {product.inStock
-                        ? `In stock${product.stockCount > 0 ? ` (${product.stockCount})` : ""}`
-                        : "Out of stock"}
-                    </span>
-
-                    <span className="inline-flex items-center gap-2 text-sm text-neutral-500 group-hover:text-white/80 group-focus-within:text-white/80 group-active:text-white/80">
-                      <Tag className="h-3.5 w-3.5 shrink-0" />
-                      <span>{product.brand?.name || "No brand"}</span>
-                    </span>
-                  </div>
-
+                  <span className="shrink-0 text-[20px] font-normal text-neutral-900 transition-colors duration-100 group-hover:text-white group-focus-within:text-white group-active:text-white md:text-2xl">
+                    {priceLabel}
+                  </span>
                   <button
                     type="button"
                     disabled={!product.inStock}

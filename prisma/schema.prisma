@@ -170,3 +170,53 @@ model BlogPost {
   @@index([category])
   @@index([createdAt])
 }
+
+model AdminNotification {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  href        String?
+  type        String   @default("system") // order | blog | product | customer | brand | system
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([read, createdAt])
+  @@index([type])
+}
+
+model PaymentAuditLog {
+  id              String   @id @default(cuid())
+  provider        String   @default("paystack")
+  event           String
+  dedupeKey       String   @unique
+  reference       String?
+  transactionId   Int?
+  orderId         String?
+  rawBody         String
+  signatureVerified Boolean @default(false)
+  status          String   @default("received") // received | ignored | processed | failed
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+  processedAt     DateTime?
+  updatedAt       DateTime @updatedAt
+
+  @@index([provider, event])
+  @@index([reference])
+  @@index([transactionId])
+  @@index([status])
+}
+
+model AppSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  category    String
+  label       String
+  description String?
+  value       Json
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+}

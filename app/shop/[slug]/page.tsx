@@ -1,11 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import AddToCartButton from "./AddToCartButton";
-import { ArrowLeft, Truck, ShieldCheck, RotateCcw } from "lucide-react";
 import ProductGrid from "@/app/components/ProductGrid";
 
 function formatNaira(amountInKobo: number) {
@@ -99,15 +97,14 @@ export default async function ProductPage({
 
               <div className="mt-4 flex items-center justify-between gap-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs  text-orange-500 bg-orange-100 border border-orange-200 rounded-full px-3 py-1 font-medium">
+                  <p className="text-xs  text-orange-500  rounded-full  py-1 font-medium">
                     {product.brand?.name || "No brand"}
                   </p>
-
                   <div
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${
+                    className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium ${
                       product.inStock
-                        ? "border-green-200 bg-green-100 text-green-700"
-                        : "border-red-200 bg-red-100 text-red-700"
+                        ? " text-green-700"
+                        : " text-red-700"
                     }`}
                   >
                     {product.inStock
@@ -116,12 +113,12 @@ export default async function ProductPage({
                   </div>
                 </div>
 
-                <p className="text-xl md:text-3xl font-medium text-neutral-950">
+                <p className="text-lg md:text-2xl font-medium text-neutral-950">
                   {formatNaira(product.price)}
                 </p>
               </div>
 
-              <p className="mt-5 max-w-xl text-[15px] leading-7 text-neutral-600">
+              <p className="mt-5 max-w-xl text-base leading-7 text-neutral-600">
                 {product.description ||
                   "No description available for this product yet."}
               </p>
@@ -141,28 +138,9 @@ export default async function ProductPage({
 
               <div className="mt-6 space-y-2 hidden md:block">
                 <div className="">
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
-                    <Truck className="h-4 w-4" />
-                    <span className="font-semibold">Delivery:</span> We deliver
-                    on time, within 3 to 7 days.
-                  </div>
-                </div>
-
-                <div className="">
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
-                    <ShieldCheck className="h-4 w-4" />
-                    <span className="font-semibold">Secure Payment:</span> Enjoy
-                    safe encrypted payments.
-                  </div>
-                </div>
-
-                <div className="">
-                  <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-neutral-950">
-                    <RotateCcw className="h-4 w-4" />
-                    <span className="font-semibold">
-                      Returns and Refunds:
-                    </span>{" "}
-                    Your money is safe with us.
+                  <div className="flex flex-col items-start gap-2 text-xs md:text-sm font-medium text-neutral-500">
+                    Note: We deliver on time, within 3 to 7 days. Enjoy safe
+                    encrypted payments. Your money is safe with us.
                   </div>
                 </div>
               </div>
