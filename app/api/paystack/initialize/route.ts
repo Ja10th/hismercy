@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { getAppUrl, initializePaystackTransaction } from "@/lib/paystack";
+import {
+  getAppUrl,
+  initializePaystackTransaction,
+  joinAppUrl,
+} from "@/lib/paystack";
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { headers } from "next/headers";
@@ -13,7 +17,7 @@ import { getAppSettings } from "@/lib/settings";
 // Upstash Redis + @upstash/ratelimit (one-line change).
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const RATE_WINDOW_MS = 60_000; // 1 minute
-const RATE_MAX_REQUESTS = 5;   // per IP per window
+const RATE_MAX_REQUESTS = 5; // per IP per window
 
 // Cleans up expired entries to prevent unbounded memory growth.
 // Runs opportunistically on every request — cheap because the map is small.
@@ -63,7 +67,10 @@ export async function POST(request: Request) {
 
     if (isRateLimited(ip)) {
       return NextResponse.json(
-        { ok: false, error: "Too many requests. Please wait a moment and try again." },
+        {
+          ok: false,
+          error: "Too many requests. Please wait a moment and try again.",
+        },
         { status: 429 },
       );
     }
@@ -153,8 +160,8 @@ export async function POST(request: Request) {
     const zone = getDeliveryZone(
       normalizedCustomer.state,
       normalizedCustomer.city,
-      originState,   // dynamic — from DB settings
-      originCity,    // dynamic — from DB settings
+      originState, // dynamic — from DB settings
+      originCity, // dynamic — from DB settings
     );
 
     const zoneRates = zones[zone];
@@ -244,14 +251,14 @@ export async function POST(request: Request) {
     });
 
     console.log("[checkout] app url", getAppUrl());
-console.log("[checkout] callback url", `${getAppUrl()}/paystack/callback`);
-console.log("[checkout] order code", order.orderCode);
+    console.log("[checkout] callback url", `${getAppUrl()}/paystack/callback`);
+    console.log("[checkout] order code", order.orderCode);
     // ── Initialize Paystack transaction ─────────────────────────────────────
     const init = await initializePaystackTransaction({
       email: order.email,
       amount: order.total,
       reference: order.orderCode,
-      callbackUrl: `${getAppUrl()}/paystack/callback`,
+      callbackUrl: joinAppUrl("/paystack/callback"),
       metadata: {
         orderCode: order.orderCode,
         fullName: order.fullName,
@@ -261,9 +268,9 @@ console.log("[checkout] order code", order.orderCode);
     });
 
     console.log("[checkout] paystack init response", {
-  authorizationUrl: init.authorization_url,
-  reference: init.reference,
-});
+      authorizationUrl: init.authorization_url,
+      reference: init.reference,
+    });
 
     return NextResponse.json({
       ok: true,
@@ -278,6 +285,4 @@ console.log("[checkout] order code", order.orderCode);
       { status: 500 },
     );
   }
-  
 }
-

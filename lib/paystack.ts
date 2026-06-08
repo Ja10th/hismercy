@@ -43,12 +43,17 @@ function getSecretKey() {
 }
 
 export function getAppUrl() {
-  return (
+  const base =
     process.env.NEXT_PUBLIC_APP_URL ||
     (process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000")
-  );
+      : "http://localhost:3000");
+
+  return base.replace(/\/+$/, "");
+}
+
+export function joinAppUrl(path: string) {
+  return `${getAppUrl()}/${path.replace(/^\/+/, "")}`;
 }
 
 async function fetchWithTimeout(
@@ -94,7 +99,12 @@ export async function initializePaystackTransaction(payload: InitPayload) {
 
   const json = initializeResponseSchema.safeParse(await response.json());
 
-  if (!response.ok || !json.success || !json.data.status || !json.data.data?.authorization_url) {
+  if (
+    !response.ok ||
+    !json.success ||
+    !json.data.status ||
+    !json.data.data?.authorization_url
+  ) {
     throw new Error(
       json.success ? json.data.message : "Could not initialize Paystack transaction",
     );
