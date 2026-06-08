@@ -184,7 +184,7 @@ export async function sendAdminOrderEmail(input: {
     throw new Error("ADMIN_ORDER_EMAIL is missing");
   }
 
-  const from = process.env.MAIL_FROM || "Mercy Agric <orders@yourdomain.com>";
+  const from = process.env.MAIL_FROM || "Ayokf100@gmail.com";
 
   return resend.emails.send({
     from,
