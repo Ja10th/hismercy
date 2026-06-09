@@ -46,7 +46,7 @@ export default function OrderSuccessPage({ params }: OrderSuccessPageProps) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-neutral-50 px-4 py-16">
+      <main className="min-h-screen bg-neutral-50 px-4 pt-32 md:pt-40 pb-16">
         <div className="mx-auto max-w-2xl">
 
           {/* Status mark */}
@@ -115,13 +115,13 @@ export default function OrderSuccessPage({ params }: OrderSuccessPageProps) {
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/shop"
-              className="inline-flex h-11 w-full items-center justify-center rounded-full bg-neutral-950 px-6 text-sm font-medium text-white transition hover:bg-neutral-800 sm:w-auto"
+              className="inline-flex h-11 w-full items-center justify-center rounded-full bg-emerald-700 px-6 text-sm font-medium text-white transition hover:bg-emerald-800 sm:w-auto"
             >
               Continue shopping
             </Link>
             <Link
               href="/contact-us"
-              className="inline-flex h-11 w-full items-center justify-center rounded-full border border-neutral-200 bg-white px-6 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 sm:w-auto"
+              className="inline-flex h-11 w-full items-center justify-center rounded-full  bg-white px-6 text-sm font-medium text-neutral-700 transition hover:underline sm:w-auto"
             >
               Contact support
             </Link>
