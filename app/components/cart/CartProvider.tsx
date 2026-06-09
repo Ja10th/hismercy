@@ -37,7 +37,9 @@ const CART_KEY = "shop_cart_v1";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
+  // Load from localStorage once on mount
   useEffect(() => {
     const saved = localStorage.getItem(CART_KEY);
     if (saved) {
@@ -47,42 +49,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(CART_KEY);
       }
     }
+    setHydrated(true);
   }, []);
 
+  // Save to localStorage, but only after hydration to avoid overwriting with []
   useEffect(() => {
+    if (!hydrated) return;
     localStorage.setItem(CART_KEY, JSON.stringify(items));
-  }, [items]);
+  }, [items, hydrated]);
 
-  const addToCart = (item: AddToCartInput, quantity = 1) => {
+  const addToCart = useCallback((item: AddToCartInput, quantity = 1) => {
     setItems((current) => {
       const existing = current.find((x) => x.id === item.id);
-
       if (existing) {
         return current.map((x) =>
           x.id === item.id ? { ...x, qty: x.qty + quantity } : x
         );
       }
-
       return [...current, { ...item, qty: quantity }];
     });
-  };
+  }, []);
 
-  const updateQuantity = (id: string, qty: number) => {
+  const updateQuantity = useCallback((id: string, qty: number) => {
     setItems((current) =>
       current
         .map((item) => (item.id === id ? { ...item, qty } : item))
         .filter((item) => item.qty > 0)
     );
-  };
+  }, []);
 
-  const removeFromCart = (id: string) => {
+  const removeFromCart = useCallback((id: string) => {
     setItems((current) => current.filter((item) => item.id !== id));
-  };
+  }, []);
 
-  // in your cart context/provider
-const clearCart = useCallback(() => {
-  setItems([]);
-}, []);
+  const clearCart = useCallback(() => {
+    setItems([]);
+  }, []);
 
   const totalItems = useMemo(
     () => items.reduce((sum, item) => sum + item.qty, 0),
