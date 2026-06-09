@@ -3,10 +3,22 @@ import Image from "next/image";
 import { footerLinks, assets } from "@/data/content";
 
 const socials = [
-  { href: "https://web.facebook.com/", icon: assets.socialFacebook, label: "Facebook" },
-  { href: "https://www.linkedin.com/", icon: assets.socialLinkedin, label: "LinkedIn" },
+  {
+    href: "https://web.facebook.com/",
+    icon: assets.socialFacebook,
+    label: "Facebook",
+  },
+  {
+    href: "https://www.linkedin.com/",
+    icon: assets.socialLinkedin,
+    label: "LinkedIn",
+  },
   { href: "https://x.com/", icon: assets.socialTwitter, label: "Twitter / X" },
-  { href: "https://www.youtube.com/", icon: assets.socialYoutube, label: "YouTube" },
+  {
+    href: "https://www.youtube.com/",
+    icon: assets.socialYoutube,
+    label: "YouTube",
+  },
 ];
 
 export default function Footer() {
@@ -52,7 +64,12 @@ export default function Footer() {
                 href="/contact-us"
                 className="flex items-center gap-2.5 bg-green-600 text-white px-7 py-3.5 rounded-full font-bold text-[14px] tracking-wide hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
               >
-                <Image src={assets.footerButtonIcon} alt="" width={18} height={18} />
+                <Image
+                  src={assets.footerButtonIcon}
+                  alt=""
+                  width={18}
+                  height={18}
+                />
                 CONTACT US
               </Link>
 
@@ -119,9 +136,6 @@ export default function Footer() {
                 Melhorar Studio
               </Link>{" "}
               —{" "}
-              <Link href="/license" className="text-accent hover:opacity-80 transition-opacity">
-                License
-              </Link>
             </p>
 
             <Link
@@ -133,7 +147,7 @@ export default function Footer() {
 
             <div className="flex gap-5">
               <Link
-                href="/terms-and-condition"
+                href="/terms"
                 className="text-[13px] text-white/40 hover:text-white/75 transition-colors duration-200"
               >
                 Terms & Conditions

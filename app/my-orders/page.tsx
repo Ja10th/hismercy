@@ -88,7 +88,7 @@ export default async function MyOrdersPage() {
                   brand: item.brand ? { name: item.brand.name } : null,
                   images: item.images.map((image) => ({ url: image.url })),
                 }))}
-                columnsClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
+                columnsClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
               />
             </section>
           ) : null}

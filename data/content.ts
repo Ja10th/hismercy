@@ -249,15 +249,14 @@ export const blogs: BlogPost[] = [
 export const footerLinks: FooterLinkGroup = {
   "Main Page": [
     { label: "About", href: "/about" },
-    { label: "Service", href: "/service" },
-    { label: "Case Study", href: "/case-study" },
+    { label: "Consultation", href: "/consultation" },
     { label: "Shop", href: "/shop" },
     { label: "Blog", href: "/blog" },
   ],
   Single: [
-    { label: "Blog Single", href: "/blog/seasonal-crop-planning-what-to-grow-when" },
-    { label: "Case Study Single", href: "/case-study/increasing-tomato-yield-by-40-using-organic-fertilizer" },
-    { label: "Shop Single", href: "/product/product-strawberry" },
+    { label: "Blog Single", href: "/blog/why-customer-trust-is-the-real-currency-of-business" },
+    { label: "Track", href: "/my-orders" },
+    { label: "Shop Single", href: "/top-feed-layer-mash" },
   ],
   Template: [
     { label: "404", href: "/404" },

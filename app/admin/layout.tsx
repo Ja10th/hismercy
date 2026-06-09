@@ -4,6 +4,10 @@ import AdminSidebar from "./AdminSidebar";
 import { AdminTopBar } from "./AdminTopBar";
 import { Monitor } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export default async function AdminLayout({
   children,
 }: {
@@ -31,7 +35,7 @@ export default async function AdminLayout({
           </div>
         </div>
 
-        <div className="hidden lg:flex w-full">
+        <div className="hidden w-full lg:flex">
           <AdminSidebar />
 
           <main className="flex-1 lg:ml-[280px]">

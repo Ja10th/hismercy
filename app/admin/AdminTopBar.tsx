@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -131,6 +137,28 @@ export function AdminTopBar() {
     setUserOpen(false);
   };
 
+  const loadNotifications = useCallback(async () => {
+    try {
+      setNotificationsLoading(true);
+
+      const res = await fetch("/api/admin/notifications", {
+        cache: "no-store",
+      });
+
+      if (!res.ok) throw new Error("Failed to load notifications");
+
+      const data = (await res.json()) as {
+        notifications: NotificationItem[];
+      };
+
+      setNotifications(data.notifications ?? []);
+    } catch {
+      setNotifications([]);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const isK = event.key.toLowerCase() === "k";
@@ -230,29 +258,29 @@ export function AdminTopBar() {
   }, [query, searchModalOpen]);
 
   useEffect(() => {
-    if (!notifOpen) return;
+    void loadNotifications();
 
-    const loadNotifications = async () => {
-      try {
-        setNotificationsLoading(true);
-        const res = await fetch("/api/admin/notifications", {
-          cache: "no-store",
-        });
-        if (!res.ok) throw new Error("Failed to load notifications");
+    const interval = window.setInterval(() => {
+      void loadNotifications();
+    }, 15000);
 
-        const data = (await res.json()) as {
-          notifications: NotificationItem[];
-        };
-        setNotifications(data.notifications ?? []);
-      } catch {
-        setNotifications([]);
-      } finally {
-        setNotificationsLoading(false);
-      }
+    const onFocus = () => {
+      void loadNotifications();
     };
 
-    void loadNotifications();
-  }, [notifOpen]);
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [loadNotifications]);
+
+  useEffect(() => {
+    if (notifOpen) {
+      void loadNotifications();
+    }
+  }, [notifOpen, loadNotifications]);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -338,7 +366,7 @@ export function AdminTopBar() {
                   setUserOpen(false);
                   setSearchModalOpen(false);
                 }}
-                className="relative inline-flex h-11  items-center justify-center rounded-2xl  text-neutral-800 transition hover:bg-neutral-50"
+                className="relative inline-flex h-11 items-center justify-center rounded-2xl text-neutral-800 transition hover:bg-neutral-50"
                 aria-label="Notifications"
               >
                 <HiMiniBell className="h-5 w-5" />
@@ -363,7 +391,8 @@ export function AdminTopBar() {
                         className="inline-flex items-center gap-1 rounded-full border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
                       >
                         <CheckCheck className="h-3.5 w-3.5" />
-                      </button>{" "}
+                      </button>
+
                       <button
                         type="button"
                         onClick={clearNotifications}
@@ -426,14 +455,15 @@ export function AdminTopBar() {
                                         {item.type}
                                       </span>
                                       <span className="text-[11px] text-neutral-400">
-                                        {new Date(
-                                          item.createdAt,
-                                        ).toLocaleString([], {
-                                          month: "short",
-                                          day: "numeric",
-                                          hour: "numeric",
-                                          minute: "2-digit",
-                                        })}
+                                        {new Date(item.createdAt).toLocaleString(
+                                          [],
+                                          {
+                                            month: "short",
+                                            day: "numeric",
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                          },
+                                        )}
                                       </span>
                                     </div>
                                   </div>

@@ -1,10 +1,12 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
-  CalendarDays,
   ChevronDown,
   Package,
   ShoppingBag,
@@ -32,6 +34,12 @@ function startOfDay(date: Date) {
   return d;
 }
 
+function endOfDay(date: Date) {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
 function addDays(date: Date, days: number) {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
@@ -47,22 +55,6 @@ function formatDayLabel(date: Date) {
 
 function formatRange(start: Date, end: Date) {
   return `${formatDayLabel(start)} – ${formatDayLabel(end)}`;
-}
-
-function getStatusClass(status: string) {
-  switch (status) {
-    case "paid":
-    case "success":
-      return "bg-emerald-50 text-emerald-700 border-emerald-200";
-    case "on_the_way":
-      return "bg-sky-50 text-sky-700 border-sky-200";
-    case "delivered":
-      return "bg-violet-50 text-violet-700 border-violet-200";
-    case "completed":
-      return "bg-neutral-100 text-neutral-700 border-neutral-200";
-    default:
-      return "bg-amber-50 text-amber-700 border-amber-200";
-  }
 }
 
 function comparisonMeta(current: number, previous: number) {
@@ -163,10 +155,12 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     ? Number(params.range)
     : 7;
 
-  const today = startOfDay(new Date());
+  const now = new Date();
+  const today = startOfDay(now);
+  const todayEnd = endOfDay(now);
   const currentStart = addDays(today, -(rangeDays - 1));
   const previousStart = addDays(currentStart, -rangeDays);
-  const previousEnd = addDays(currentStart, -1);
+  const previousEnd = endOfDay(addDays(currentStart, -1));
 
   const chartDays = Array.from({ length: rangeDays }, (_, index) =>
     addDays(currentStart, index),
@@ -204,7 +198,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         paymentStatus: { in: ["paid", "success"] },
         createdAt: {
           gte: currentStart,
-          lte: today,
+          lte: todayEnd,
         },
       },
     }),
@@ -222,7 +216,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       where: {
         createdAt: {
           gte: currentStart,
-          lte: today,
+          lte: todayEnd,
         },
       },
     }),
@@ -238,7 +232,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       where: {
         createdAt: {
           gte: currentStart,
-          lte: today,
+          lte: todayEnd,
         },
       },
     }),
@@ -254,7 +248,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       where: {
         createdAt: {
           gte: currentStart,
-          lte: today,
+          lte: todayEnd,
         },
       },
     }),
@@ -298,7 +292,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         paymentStatus: { in: ["paid", "success"] },
         createdAt: {
           gte: currentStart,
-          lte: today,
+          lte: todayEnd,
         },
       },
       select: {
@@ -314,12 +308,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       },
     }),
   ]);
-
-  const dateLabel = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date());
 
   const totalRevenueValue = totalRevenue._sum.total || 0;
   const currentRevenueValue = currentRevenue._sum.total || 0;
@@ -388,8 +376,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   return (
     <div className="min-h-screen bg-[#f6f7fb]">
-      
-
       <div className="mx-auto max-w-[1600px] px-4 py-5 sm:px-6 lg:px-1">
         <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           {stats.map((item) => {
@@ -610,7 +596,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
             <div className="mt-4 space-y-3">
               {recentOrders.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-neutral-300  p-5 text-sm text-neutral-500">
+                <div className="rounded-2xl border border-dashed border-neutral-300 p-5 text-sm text-neutral-500">
                   No orders yet.
                 </div>
               ) : (
@@ -620,7 +606,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   return (
                     <div
                       key={order.id}
-                      className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200  p-4"
+                      className="flex items-center justify-between gap-4 rounded-xl border border-neutral-200 p-4"
                     >
                       <div className="flex min-w-0 items-center gap-3">
                         <PersonAvatar />
@@ -773,9 +759,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       <div className="text-right">
                         <p
                           className={`text-xs font-medium ${
-                            product.inStock
-                              ? "text-emerald-600"
-                              : "text-red-600"
+                            product.inStock ? "text-emerald-600" : "text-red-600"
                           }`}
                         >
                           {product.inStock ? "In stock" : "Out"}

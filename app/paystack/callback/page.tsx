@@ -74,7 +74,7 @@ export default async function PaystackCallbackPage({ searchParams }: CallbackPro
 
   if (!reference || typeof reference !== "string") {
     console.warn("[paystack-callback] missing reference");
-    redirect("/checkout?payment=missing-reference");
+    redirect("/payment-failed");
   }
 
   const cleanReference = reference.trim();
@@ -105,7 +105,7 @@ export default async function PaystackCallbackPage({ searchParams }: CallbackPro
 
   if (!order) {
     console.error("[paystack-callback] order not found", { cleanReference });
-    redirect("/checkout?payment=order-not-found");
+    redirect("/payment-failed");
   }
 
   if (order.paymentStatus === "paid") {
@@ -160,7 +160,7 @@ export default async function PaystackCallbackPage({ searchParams }: CallbackPro
       errorMessage: "Paystack verification call threw an exception",
     });
 
-    redirect("/checkout?payment=verification-failed");
+    redirect("/payment-failed");
   }
 
   if (!verified) {
@@ -177,7 +177,7 @@ export default async function PaystackCallbackPage({ searchParams }: CallbackPro
       errorMessage: "No verification data returned from Paystack",
     });
 
-    redirect("/checkout?payment=verification-failed");
+    redirect("/payment-failed");
   }
 
   const verifiedData = verified.data ?? verified;
@@ -220,7 +220,7 @@ export default async function PaystackCallbackPage({ searchParams }: CallbackPro
       errorMessage: `Mismatch - status: ${verifiedStatus}, amount: ${verifiedAmount} (expected ${order.total}), currency: ${verifiedCurrency}`,
     });
 
-    redirect("/checkout?payment=failed");
+    redirect("/payment-failed");
   }
 
   const paidOrder = await prisma.$transaction(async (tx) => {
