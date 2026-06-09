@@ -1,6 +1,7 @@
 import "server-only";
 
 import nodemailer from "nodemailer";
+import { joinAppUrl } from "./paystack";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -144,9 +145,15 @@ export async function sendCustomerOrderEmail(input: {
   const from = process.env.MAIL_FROM || process.env.GMAIL_USER;
   if (!from) throw new Error("MAIL_FROM or GMAIL_USER is missing");
 
-  const trackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/track-order/${input.orderCode}`;
+  const trackUrl = joinAppUrl(`/track-order/${input.orderCode}`);
 
-  return transporter.sendMail({
+  console.log("[email] sending customer email", {
+    to: input.email,
+    from,
+    trackUrl,
+  });
+
+  const info = await transporter.sendMail({
     from,
     to: input.email,
     subject: `Order confirmed - ${input.orderCode}`,
@@ -157,6 +164,14 @@ export async function sendCustomerOrderEmail(input: {
       total: input.total,
     }),
   });
+
+  console.log("[email] customer email sent", {
+    messageId: info.messageId,
+    accepted: info.accepted,
+    rejected: info.rejected,
+  });
+
+  return info;
 }
 
 export async function sendAdminOrderEmail(input: {
