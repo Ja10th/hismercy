@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2025";
-const COMPANY = "Mercy Agricultural Servicesultural Services";
+const COMPANY = "Mercy Agricultural Services";
 const EMAIL = "support@mercyagric.com";
 
 const sections = [

@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2026";
-const COMPANY = "Mercy Agricultural Servicesultural Services";
+const COMPANY = "Mercy Agricultural Services";
 const EMAIL = "support@mercyagric.com";
 
 const sections = [
@@ -111,7 +111,7 @@ export default function LicensePage() {
             <section id="trademarks" className="scroll-mt-8">
               <h2 className="mb-4 text-xl font-semibold text-neutral-950">Trademarks</h2>
               <p>
-                &ldquo;Mercy Agricultural Services,&rdquo; &ldquo;Mercy Agricultural Servicesultural Services,&rdquo; and associated logos are trademarks of {COMPANY}. You may not use these names or marks in any way that could cause confusion, suggest our endorsement, or misrepresent your relationship with us.
+                &ldquo;Mercy Agricultural Services,&rdquo; &ldquo;Mercy Agricultural Services,&rdquo; and associated logos are trademarks of {COMPANY}. You may not use these names or marks in any way that could cause confusion, suggest our endorsement, or misrepresent your relationship with us.
               </p>
               <p className="mt-4">
                 Third-party names, logos, and trademarks appearing on this website belong to their respective owners and are used solely for identification purposes.
