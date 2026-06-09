@@ -88,7 +88,7 @@ export default function AboutPage() {
                 <div className="relative h-[480px]">
                   <Image
                     src="/bags.png"
-                    alt="Mercy Agric Services"
+                    alt="Mercy Agricultural Services Services"
                     fill
                     className="object-cover"
                     priority
@@ -135,7 +135,7 @@ export default function AboutPage() {
                   </h2>
 
                   <p className="mt-4 text-[16px] leading-[1.9] text-neutral-600">
-                    Mercy Agric Services provides feedmill materials, poultry
+                    Mercy Agricultural Services Services provides feedmill materials, poultry
                     and livestock feed, farm products, and useful support for
                     customers who want dependable supply without confusion.
                   </p>

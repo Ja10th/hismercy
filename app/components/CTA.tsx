@@ -24,7 +24,7 @@ export default function CTA() {
             Quality Feed and Farm Supplies for Better Growth
           </h1>
           <p className="text-white/82 text-[16px] leading-[1.7] max-w-md">
-            Trust Mercy Agric Services for branded feeds, feed ingredients, and reliable farm supplies that support healthier birds, stronger livestock, and better farm results.
+            Trust Mercy Agricultural Services Services for branded feeds, feed ingredients, and reliable farm supplies that support healthier birds, stronger livestock, and better farm results.
           </p>
           <div className="flex gap-4 flex-wrap">
             <Link

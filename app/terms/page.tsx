@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2025";
-const COMPANY = "Mercy Agricultural Services";
+const COMPANY = "Mercy Agricultural Servicesultural Services";
 const EMAIL = "support@mercyagric.com";
 
 const sections = [
@@ -63,7 +63,7 @@ export default function TermsPage() {
             <section id="acceptance" className="scroll-mt-8">
               <h2 className="mb-4 text-xl font-semibold text-neutral-950">Acceptance of terms</h2>
               <p>
-                By accessing the Mercy Agric website or placing an order, you agree to be bound by these Terms &amp; Conditions. If you do not agree with any part of these terms, please do not use our platform.
+                By accessing the Mercy Agricultural Services website or placing an order, you agree to be bound by these Terms &amp; Conditions. If you do not agree with any part of these terms, please do not use our platform.
               </p>
               <p className="mt-4">
                 These terms apply to all visitors, customers, and users of our website. We reserve the right to update them at any time, and continued use of our platform after changes are published constitutes acceptance of the updated terms.

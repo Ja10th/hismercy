@@ -73,9 +73,9 @@ export type PublicAppSettings = Pick<
 
 const DEFAULT_SETTINGS: AppSettings = {
   general: {
-    siteName: "Mercy Agricultural Services",
+    siteName: "Mercy Agricultural Servicesultural Services",
     tagline: "Trusted feed, supplies, and farm support.",
-    logoText: "Mercy Agric",
+    logoText: "Mercy Agricultural Services",
     footerText: "Supplying farmers with reliable products and support.",
   },
   contact: {

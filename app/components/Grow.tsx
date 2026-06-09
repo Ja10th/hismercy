@@ -3,7 +3,7 @@ import { growCards } from "@/data/content";
 import { TextGenerateEffect } from "./ui/text-generate-effect";
 
 export default function Grow() {
-  const words = `Mercy Agric Services supplies feedmill materials, branded poultry feeds, pig feeds,
+  const words = `Mercy Agricultural Services Services supplies feedmill materials, branded poultry feeds, pig feeds,
               drugs, and poultry equipment to farmers and retailers in Ekiti. We make it easy
               to choose the right feed brand, keep stock available, and get dependable service.
 `;

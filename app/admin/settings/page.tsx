@@ -217,7 +217,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
               </label>
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-neutral-700">Logo text</span>
-                <Input name="logoText" defaultValue={settings.general.logoText} placeholder="Mercy Agric" />
+                <Input name="logoText" defaultValue={settings.general.logoText} placeholder="Mercy Agricultural Services" />
               </label>
               <label className="block space-y-2">
                 <span className="text-sm font-medium text-neutral-700">Footer text</span>

@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2025";
-const COMPANY = "Mercy Agricultural Services";
+const COMPANY = "Mercy Agricultural Servicesultural Services";
 const EMAIL = "support@mercyagric.com";
 const ADDRESS = "Ado-Ekiti, Ekiti State, Nigeria";
 
@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
             <section id="introduction" className="scroll-mt-8">
               <h2 className="mb-4 text-xl font-semibold text-neutral-950">Introduction</h2>
               <p>
-                {COMPANY} (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the Mercy Agric website and e-commerce platform. This Privacy Policy explains how we collect, use, and protect information about you when you visit our website or place an order with us.
+                {COMPANY} (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the Mercy Agricultural Services website and e-commerce platform. This Privacy Policy explains how we collect, use, and protect information about you when you visit our website or place an order with us.
               </p>
               <p className="mt-4">
                 By using our platform, you agree to the collection and use of information in accordance with this policy. We take your privacy seriously and handle all personal data with care and in accordance with applicable Nigerian data protection law, including the Nigeria Data Protection Act 2023 (NDPA).
@@ -135,7 +135,7 @@ export default function PrivacyPolicyPage() {
             <section id="payments" className="scroll-mt-8">
               <h2 className="mb-4 text-xl font-semibold text-neutral-950">Payment processing</h2>
               <p>
-                All payments are processed by Paystack, a licensed payment service provider. When you pay, you are redirected to Paystack&rsquo;s secure payment page. Mercy Agric never sees or stores your card number, PIN, or banking credentials.
+                All payments are processed by Paystack, a licensed payment service provider. When you pay, you are redirected to Paystack&rsquo;s secure payment page. Mercy Agricultural Services never sees or stores your card number, PIN, or banking credentials.
               </p>
               <p className="mt-4">
                 Paystack&rsquo;s handling of your payment data is governed by their own Privacy Policy, available at{" "}

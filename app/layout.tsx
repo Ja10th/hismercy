@@ -3,7 +3,7 @@ import "./globals.css";
 import { CartProvider } from "./components/cart/CartProvider";
 
 export const metadata: Metadata = {
-  title: "Mercy Agricultural Services",
+  title: "Mercy Agricultural Servicesultural Services",
   description:
     "Supplying maize, soya, wheat offal and branded feeds. Browse trusted feed brands, place orders, and get reliable delivery across Ekiti.",
 };

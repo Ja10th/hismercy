@@ -62,7 +62,7 @@ export default function OrderSuccessPage({ params }: OrderSuccessPageProps) {
               Your order is placed.
             </h1>
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-neutral-500">
-              Thank you for choosing Mercy Agric. We will be in contact with you shortly to arrange the next steps.
+              Thank you for choosing Mercy Agricultural Services. We will be in contact with you shortly to arrange the next steps.
             </p>
           </div>
 

@@ -68,7 +68,7 @@ function customerEmailHtml({
                   <!-- Left accent stripe -->
                   <td width="6" style="background:#4ade80;">&nbsp;</td>
                   <td style="padding:28px 32px 26px;">
-                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#4ade80;">Mercy Agricultural Services</p>
+                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#4ade80;">Mercy Agricultural Servicesultural Services</p>
                     <h1 style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:400;color:#ffffff;line-height:1.15;">Order Confirmed</h1>
                   </td>
                 </tr>
@@ -147,7 +147,7 @@ function customerEmailHtml({
             <td style="background:#f5f7f5;border-top:1px solid #d1d5d1;padding:20px 32px;">
               <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#9ca3af;">
                 This is an automated confirmation. Please do not reply to this email.<br />
-                &copy; Mercy Agricultural Services. All rights reserved.
+                &copy; Mercy Agricultural Servicesultural Services. All rights reserved.
               </p>
             </td>
           </tr>
@@ -266,7 +266,7 @@ function adminEmailHtml({
           <tr>
             <td style="background:#f8fafc;border-top:1px solid #cbd5e1;padding:20px 32px;">
               <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#94a3b8;">
-                Sent automatically by Mercy Agricultural Services order system.<br />
+                Sent automatically by Mercy Agricultural Servicesultural Services order system.<br />
                 Do not forward or share this notification.
               </p>
             </td>

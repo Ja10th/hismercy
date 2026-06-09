@@ -2,7 +2,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2026";
-const COMPANY = "Mercy Agricultural Services";
+const COMPANY = "Mercy Agricultural Servicesultural Services";
 const EMAIL = "support@mercyagric.com";
 
 const sections = [
@@ -97,7 +97,7 @@ export default function LicensePage() {
                   "Use our product descriptions, images, or written content for commercial purposes outside of linking to us",
                   "Scrape, crawl, or extract data from this website in bulk using automated tools",
                   "Frame or embed this website within another website in a way that misrepresents its origin or our brand",
-                  "Imply endorsement or affiliation with Mercy Agric without our explicit written permission",
+                  "Imply endorsement or affiliation with Mercy Agricultural Services without our explicit written permission",
                   "Modify, adapt, translate, or create derivative works based on any part of this website's content",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
@@ -111,7 +111,7 @@ export default function LicensePage() {
             <section id="trademarks" className="scroll-mt-8">
               <h2 className="mb-4 text-xl font-semibold text-neutral-950">Trademarks</h2>
               <p>
-                &ldquo;Mercy Agric,&rdquo; &ldquo;Mercy Agricultural Services,&rdquo; and associated logos are trademarks of {COMPANY}. You may not use these names or marks in any way that could cause confusion, suggest our endorsement, or misrepresent your relationship with us.
+                &ldquo;Mercy Agricultural Services,&rdquo; &ldquo;Mercy Agricultural Servicesultural Services,&rdquo; and associated logos are trademarks of {COMPANY}. You may not use these names or marks in any way that could cause confusion, suggest our endorsement, or misrepresent your relationship with us.
               </p>
               <p className="mt-4">
                 Third-party names, logos, and trademarks appearing on this website belong to their respective owners and are used solely for identification purposes.
