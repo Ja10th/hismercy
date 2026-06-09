@@ -285,7 +285,7 @@ export const assets = {
   heroVideo:
     "https://cdn.prod.website-files.com/68a9d6e8805301b6db84dc9b%2F68ac6a15fe815cb5d37f98c2_2077337_Tractor_Spraying_1920x1080%20%281%29-transcode.mp4",
   heroPoster:
-    "https://cdn.prod.website-files.com/68a9d6e8805301b6db84dc9b%2F68ac6a15fe815cb5d37f98c2_2077337_Tractor_Spraying_1920x1080%20%281%29-poster-00001.jpg",
+    "/heroposter.png",
   farmersVideo:
     "https://cdn.prod.website-files.com/68a9d6e8805301b6db84dc9b%2F68e7d1c0fd87fb720b8023af_0_Farmers_Farm_Workers_3840x2160%20%281%29-transcode.mp4",
   socialFacebook: `${CDN}/68c654b08962ad2208fa0bc1_Frame.svg`,

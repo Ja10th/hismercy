@@ -92,7 +92,7 @@ export default function ConsultationAreasCarousel() {
             </p>
 
             <div className="mt-5 flex items-center gap-3">
-              <h3 className="text-3xl font-semibold leading-[1.15] text-white md:text-4xl lg:text-6xl">
+              <h3 className="text-2xl md:text-3xl lg:text-5xl font-semibold text-white leading-[1.2]">
                 {current.title}
               </h3>
             </div>

@@ -21,7 +21,10 @@ type SearchParams = {
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; className: string; Icon: React.ElementType }> = {
+  const map: Record<
+    string,
+    { label: string; className: string; Icon: React.ElementType }
+  > = {
     processed: {
       label: "Processed",
       className: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -60,7 +63,10 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function buildUrl(base: Record<string, string>, overrides: Record<string, string>) {
+function buildUrl(
+  base: Record<string, string>,
+  overrides: Record<string, string>,
+) {
   const params = new URLSearchParams({ ...base, ...overrides });
   for (const [k, v] of params.entries()) {
     if (!v) params.delete(k);
@@ -182,20 +188,16 @@ export default async function PaymentAuditLogPage({
   return (
     <div className="min-h-screen bg-neutral-50 px-4 py-6 sm:px-6 lg:px-2">
       <div className="mx-auto max-w-[1600px] space-y-6">
-
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">
+            <h1 className="text-2xl font-semibold tracking-tight text-neutral-950">
               Payment Audit Log
             </h1>
             <p className="mt-2 text-sm text-neutral-500">
-              Every payment event — webhook and callback — recorded in one place.
+              Every payment event recorded in one
+              place.
             </p>
-          </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-600 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-            <Receipt className="h-4 w-4 text-neutral-400" />
-            {total.toLocaleString()} total entries
           </div>
         </div>
 
@@ -205,7 +207,7 @@ export default async function PaymentAuditLogPage({
             <Link
               key={card.label}
               href={buildUrl({}, { status: card.label.toLowerCase() })}
-              className={`group rounded-3xl border p-5 transition hover:shadow-md ${card.bg}`}
+              className={`group rounded-3xl border p-5 transition  ${card.bg}`}
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium uppercase tracking-widest text-neutral-500">
@@ -213,7 +215,9 @@ export default async function PaymentAuditLogPage({
                 </p>
                 <card.Icon className={`h-4 w-4 ${card.textColor}`} />
               </div>
-              <p className={`mt-2 text-3xl font-semibold tabular-nums ${card.textColor}`}>
+              <p
+                className={`mt-2 text-3xl font-semibold tabular-nums ${card.textColor}`}
+              >
                 {card.value.toLocaleString()}
               </p>
             </Link>
@@ -229,7 +233,10 @@ export default async function PaymentAuditLogPage({
               return (
                 <Link
                   key={tab.value}
-                  href={buildUrl({ ...(q ? { q } : {}), page: "1" }, { status: tab.value })}
+                  href={buildUrl(
+                    { ...(q ? { q } : {}), page: "1" },
+                    { status: tab.value },
+                  )}
                   className={[
                     "rounded-2xl border px-4 py-2 text-sm font-medium transition",
                     active
@@ -245,7 +252,9 @@ export default async function PaymentAuditLogPage({
 
           {/* Search */}
           <form method="GET" action="/admin/audit-log" className="flex gap-2">
-            {status ? <input type="hidden" name="status" value={status} /> : null}
+            {status ? (
+              <input type="hidden" name="status" value={status} />
+            ) : null}
             <input
               name="q"
               defaultValue={q}
@@ -254,14 +263,14 @@ export default async function PaymentAuditLogPage({
             />
             <button
               type="submit"
-              className="h-10 rounded-xl bg-neutral-950 px-4 text-sm font-medium text-white transition hover:bg-neutral-800"
+              className="h-10 rounded-xl bg-emerald-700 px-4 text-sm font-medium text-white transition hover:bg-emerald-800"
             >
               Search
             </button>
             {q ? (
               <Link
                 href={buildUrl({ ...(status ? { status } : {}) }, { q: "" })}
-                className="inline-flex h-10 items-center rounded-xl border border-neutral-200 bg-white px-4 text-sm text-neutral-600 transition hover:bg-neutral-50"
+                className="inline-flex h-10 items-center rounded-xl border text-red-500 border-red-200 bg-red-50 px-4 text-sm transition hover:bg-neutral-50"
               >
                 Clear
               </Link>
@@ -274,9 +283,13 @@ export default async function PaymentAuditLogPage({
           {logs.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-20 text-center">
               <Receipt className="h-8 w-8 text-neutral-300" />
-              <p className="text-sm font-medium text-neutral-950">No entries found</p>
+              <p className="text-sm font-medium text-neutral-950">
+                No entries found
+              </p>
               <p className="text-xs text-neutral-400">
-                {q || status ? "Try adjusting your filters." : "Payment events will appear here."}
+                {q || status
+                  ? "Try adjusting your filters."
+                  : "Payment events will appear here."}
               </p>
             </div>
           ) : (
@@ -307,7 +320,10 @@ export default async function PaymentAuditLogPage({
                 </thead>
                 <tbody className="divide-y divide-neutral-100">
                   {logs.map((log) => (
-                    <tr key={log.id} className="group transition hover:bg-neutral-50/60">
+                    <tr
+                      key={log.id}
+                      className="group transition hover:bg-neutral-50/60"
+                    >
                       <td className="px-5 py-4">
                         <span className="rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 font-mono text-xs text-neutral-700">
                           {log.event}

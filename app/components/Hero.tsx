@@ -4,7 +4,7 @@ import { assets } from "@/data/content";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-end overflow-hidden pt-28 md:pt-18">
+    <section className="relative min-h-[80vh] flex items-end overflow-hidden pt-28 md:pt-18">
       {/* Background video */}
       <video
         className="absolute inset-0 z-0 h-full w-full object-cover object-center"
@@ -15,7 +15,7 @@ export default function Hero() {
         poster={assets.heroPoster}
       >
         <source
-          src="https://www.pexels.com/download/video/856986/"
+          src="https://www.pexels.com/download/video/8114889/"
           type="video/mp4"
         />
       </video>

@@ -32,7 +32,7 @@ export default function Blog() {
             <Link
               key={i}
               href={post.href}
-              className="flex flex-col bg-white rounded-[1.5rem] overflow-hidden border border-neutral-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+              className="flex flex-col bg-white rounded-[1.5rem] overflow-hidden border border-neutral-200 hover:-translate-y-1 transition-all duration-300 group"
             >
               {/* Image */}
               <div className="relative h-56 overflow-hidden flex-shrink-0">

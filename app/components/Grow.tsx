@@ -30,7 +30,7 @@ export default function Grow() {
                   i === 0 ? " " : ""
                 }`}
               >
-                <h3 className="text-2xl font-medium text-neutral-900">
+                <h3 className="text-xl md:text-2xl font-medium text-neutral-900">
                   {card.title}
                 </h3>
                 <p className="text-[16px] text-neutral-600 leading-[1.75]">

@@ -135,7 +135,6 @@ export default function Footer() {
               >
                 Melhorar Studio
               </Link>{" "}
-              —{" "}
             </p>
 
             <Link

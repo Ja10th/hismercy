@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   CheckCircle2,
-  ChevronDown,
   CircleHelp,
   Clock3,
   FileText,
@@ -91,13 +90,6 @@ function statusStepIndex(status: string) {
   }
 }
 
-function stepTone(index: number, active: boolean) {
-  const base = "rounded-full flex h-11 w-11 items-center justify-center";
-  if (!active) return `${base} bg-white text-emerald-700 shadow-sm`;
-  if (index === 1) return `${base} bg-emerald-700 text-white`;
-  return `${base} bg-emerald-700 text-white`;
-}
-
 export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
   const params = searchParams ? await searchParams : {};
   const email = typeof params.email === "string" ? params.email.trim() : "";
@@ -154,67 +146,162 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
     ? `/api/my-orders/${order.orderCode}/receipt?email=${encodeURIComponent(order.email)}`
     : "#";
 
+  // ── Shared card shell ────────────────────────────────────────────────────────
+  function Card({
+    children,
+    className = "",
+  }: {
+    children: React.ReactNode;
+    className?: string;
+  }) {
+    return (
+      <div
+        className={`overflow-hidden rounded-[24px] border border-neutral-200 bg-white ${className}`}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  function CardHeader({
+    icon: Icon,
+    title,
+    action,
+  }: {
+    icon: React.ElementType;
+    title: string;
+    action?: React.ReactNode;
+  }) {
+    return (
+      <div className="flex items-center justify-between gap-3 border-b border-neutral-100 px-5 py-4">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50">
+            <Icon className="h-3.5 w-3.5 text-emerald-700" />
+          </div>
+          <h3 className="text-[15px] font-semibold text-neutral-950">
+            {title}
+          </h3>
+        </div>
+        {action}
+      </div>
+    );
+  }
+
   return (
     <>
       <Navbar />
 
-      <main className="min-h-screen px-4 pb-10 pt-24 md:pt-32 sm:px-6 lg:px-8">
+      <main className="min-h-screen px-4 pb-16 pt-24 md:pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          {/* Top bar */}
+          <div className="mb-7 flex items-center gap-4">
             <Link
               href="/my-orders"
-              className="inline-flex items-center gap-2 rounded-full bg-neutral-100 px-2 py-2 text-sm font-medium  shadow-sm transition hover:bg-neutral-50"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-50"
             >
-              <TfiArrowLeft className="h-4 w-4" />
+              <TfiArrowLeft className="h-3.5 w-3.5" />
             </Link>
-
             <p className="hidden text-sm text-neutral-500 md:block">
-              Showing tracking details for your search.
+              Order tracking
             </p>
           </div>
 
+          {/* ── No search params ─────────────────────────────────────────────── */}
           {!email || !orderCode ? (
-            <div className="rounded-[28px] border border-dashed border-neutral-300 bg-white p-8 text-sm text-neutral-500 shadow-sm">
-              Enter your email and order code to see your order.
-            </div>
-          ) : !order ? (
-            <div className="rounded-[28px] bg-white p-8 text-sm text-neutral-500 shadow-sm">
-              No order was found for that email and order code.
-            </div>
+            <Card>
+              <div className="border-b border-neutral-100 bg-neutral-50 px-6 py-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                  Search result
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-neutral-50">
+                  <Package className="h-6 w-6 text-neutral-300" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-neutral-950">
+                    No search yet
+                  </p>
+                  <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-neutral-500">
+                    Enter your email address and order code to look up your
+                    order.
+                  </p>
+                </div>
+                <Link
+                  href="/my-orders"
+                  className="mt-1 inline-flex h-10 items-center gap-2 rounded-full bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800"
+                >
+                  Search orders
+                </Link>
+              </div>
+            </Card>
+          ) : /* ── Order not found ──────────────────────────────────────────────── */
+          !order ? (
+            <Card>
+              <div className="border-b border-neutral-100 bg-neutral-50 px-6 py-4">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                  Search result
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-red-100 bg-red-50">
+                  <Package className="h-6 w-6 text-red-400" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-neutral-950">
+                    No order found
+                  </p>
+                  <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-neutral-500">
+                    We couldn&apos;t find{" "}
+                    <span className="font-medium text-neutral-700">
+                      {orderCode}
+                    </span>{" "}
+                    for that email address. Check your details and try again.
+                  </p>
+                </div>
+                <Link
+                  href="/my-orders"
+                  className="mt-1 inline-flex h-10 items-center gap-2 rounded-full bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800"
+                >
+                  Try again
+                </Link>
+              </div>
+            </Card>
           ) : (
+            /* ── Order found ──────────────────────────────────────────────────── */
             <div className="space-y-5">
-              <section className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
+              {/* Order header + progress */}
+              <Card>
+                {/* Header row */}
                 <div className="flex flex-col gap-4 px-5 py-5 md:flex-row md:items-start md:justify-between md:px-6 md:py-6">
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-medium text-neutral-700">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-600">
                         {order.fullName}
                       </span>
-
-                      <div className="hidden h-4 w-px bg-neutral-200 md:block" />
-
-                      <div className="flex items-center gap-2 text-sm text-neutral-500">
-                        <ChevronDown className="h-4 w-4" />
-                        <span>{formatDate(order.createdAt)}</span>
-                      </div>
+                      <span className="hidden h-3.5 w-px bg-neutral-200 md:block" />
+                      <span className="text-xs text-neutral-400">
+                        {formatDate(order.createdAt)}
+                      </span>
                     </div>
-
-                    <h2 className="mt-4 text-[26px] font-semibold tracking-tight text-neutral-950 md:text-[30px]">
+                    <h2 className="mt-3 font-mono text-[26px] font-semibold tracking-wider text-neutral-950 md:text-[30px]">
                       {order.orderCode}
                     </h2>
                   </div>
 
-                  <div className="flex items-start gap-4 md:items-center">
-                    <div className="text-right">
-                      <p className="mt-2 text-[26px] font-semibold tracking-tight text-neutral-950 md:text-[32px]">
-                        {formatNaira(order.total)}
-                      </p>
-                    </div>
+                  <div className="shrink-0">
+                    <p className="text-right text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                      Total
+                    </p>
+                    <p className="mt-1 text-[28px] font-semibold tracking-tight text-neutral-950 md:text-[32px]">
+                      {formatNaira(order.total)}
+                    </p>
                   </div>
                 </div>
 
-                <div className="px-5 pb-5 md:px-6 md:pb-6">
-                  <div className="flex items-center justify-center gap-3 overflow-x-auto">
+                {/* Progress steps */}
+                <div className="border-t border-neutral-100 px-5 py-5 md:px-6">
+                  <div className="flex items-center">
                     {steps.map((step, index) => {
                       const Icon = step.icon;
                       const active = index <= stepIndex;
@@ -223,217 +310,206 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                       return (
                         <div
                           key={step.key}
-                          className="flex min-w-[160px] flex-1 items-center"
+                          className="flex flex-1 items-center"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col items-center gap-2">
                             <div
                               className={[
-                                "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border",
+                                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors",
                                 active
                                   ? "border-emerald-700 bg-emerald-700 text-white"
-                                  : "border-neutral-200 bg-white text-neutral-400",
+                                  : "border-neutral-200 bg-white text-neutral-300",
                               ].join(" ")}
                             >
                               <Icon className="h-4 w-4" />
                             </div>
-
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-neutral-950">
-                                {step.label}
-                              </p>
-                              <p className="text-sm text-neutral-500">
-                                {formatDate(order.createdAt)}
-                              </p>
-                            </div>
+                            <p
+                              className={[
+                                " text-xs font-medium sm:block",
+                                active
+                                  ? "text-neutral-950"
+                                  : "text-neutral-400",
+                              ].join(" ")}
+                            >
+                              {step.label}
+                            </p>
                           </div>
 
-                          {!last ? (
+                          {!last && (
                             <div
                               className={[
-                                "mx-4 hidden h-px flex-1 border-t",
-                                active
-                                  ? "border-emerald-300"
-                                  : "border-neutral-200",
-                                "sm:block",
+                                "mx-2 h-px flex-1 transition-colors sm:mx-3",
+                                index < stepIndex
+                                  ? "bg-emerald-500"
+                                  : "bg-neutral-200",
                               ].join(" ")}
                             />
-                          ) : null}
+                          )}
                         </div>
                       );
                     })}
                   </div>
                 </div>
-              </section>
+              </Card>
 
-              <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+              {/* Main grid */}
+              <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
                 <div className="space-y-5">
-                  <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
-                    <div className="flex items-center justify-between gap-3 px-5 py-5">
-                      <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-emerald-700" />
-                        <h3 className="text-[18px] font-semibold text-neutral-950">
-                          Order items
-                        </h3>
-                      </div>
+                  {/* Order items */}
+                  <Card>
+                    <CardHeader
+                      icon={Package}
+                      title="Order items"
+                      action={
+                        <Link
+                          href={receiptHref}
+                          className="inline-flex h-9 items-center gap-2 rounded-full bg-emerald-700 px-4 text-xs font-semibold text-white transition hover:bg-emerald-800"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          Receipt
+                        </Link>
+                      }
+                    />
 
-                      <Link
-                        href={receiptHref}
-                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-800"
-                      >
-                        <FileText className="h-4 w-4" />
-                        Download receipt
-                      </Link>
-                    </div>
-
-                    <div className="px-5 pb-5">
-                      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2">
-                        {itemsPreview.length === 0 ? (
-                          <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 p-4 text-sm text-neutral-500">
-                            No items found.
-                          </div>
-                        ) : (
-                          itemsPreview.map((item, index) => {
-                            const imageUrl = item.image || "/bags.png";
-
-                            return (
-                              <div
-                                key={item.id}
-                                className="rounded-2xl border border-neutral-200 bg-white p-3 flex justify-between items-start"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-neutral-100 bg-neutral-50">
-                                    <Image
-                                      src={imageUrl}
-                                      alt={item.name}
-                                      fill
-                                      className="object-contain p-1.5"
-                                    />
-                                  </div>
-
-                                  <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-medium text-neutral-950">
-                                      {item.name}
-                                    </p>
-                                    <p className="mt-1 text-sm text-neutral-500">
-                                      Qty {item.qty}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                <div className="mt-4 flex items-end justify-between gap-3">
-                                  <p className="text-sm font-medium text-neutral-950">
-                                    {formatNaira(item.price * item.qty)}
-                                  </p>
-
-                                  {index === itemsPreview.length - 1 &&
-                                  extraCount > 0 ? (
-                                    <span className="text-xs text-neutral-500">
-                                      +{extraCount} more
-                                    </span>
-                                  ) : null}
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
-                    <div className="flex items-center gap-2 px-5 py-5">
-                      <Clock3 className="h-4 w-4 text-emerald-700" />
-                      <h3 className="text-[18px] font-semibold text-neutral-950">
-                        Previous orders
-                      </h3>
-                    </div>
-
-                    <div className="px-5 pb-5">
-                      {previousOrders.length === 0 ? (
-                        <div className="rounded-[18px] border border-dashed border-emerald-100 bg-[#f1fbf4] p-4 text-sm text-neutral-500">
-                          No previous orders found for this email.
+                    <div className="p-5">
+                      {itemsPreview.length === 0 ? (
+                        <div className="flex flex-col items-center gap-3 rounded-[18px] border border-dashed border-neutral-200 bg-neutral-50 py-10 text-center">
+                          <Package className="h-6 w-6 text-neutral-300" />
+                          <p className="text-sm text-neutral-400">
+                            No items on this order.
+                          </p>
                         </div>
                       ) : (
-                        <div className="space-y-3">
-                          {previousOrders.map((prev) => {
-                            const prevImage =
-                              prev.items[0]?.image || "/bags.png";
-
-                            return (
-                              <div
-                                key={prev.id}
-                                className="rounded-[18px] border border-emerald-100 bg-[#f1fbf4] p-4"
-                              >
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="flex items-start gap-3">
-                                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-neutral-100 bg-white">
-                                      <Image
-                                        src={prevImage}
-                                        alt={prev.orderCode}
-                                        fill
-                                        className="object-contain p-1.5"
-                                      />
-                                    </div>
-
-                                    <div>
-                                      <p className="font-semibold text-neutral-950">
-                                        {prev.orderCode}
-                                      </p>
-                                      <p className="mt-1 text-sm text-neutral-500">
-                                        {formatDate(prev.createdAt)}
-                                      </p>
-                                      <p className="mt-1 text-sm text-neutral-600">
-                                        {statusLabel(prev.status)}
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  <div className="text-right">
-                                    <p className="font-semibold text-neutral-950">
-                                      {formatNaira(prev.total)}
-                                    </p>
-                                    <p className="mt-1 text-xs text-neutral-500">
-                                      {prev.items.length} item
-                                      {prev.items.length === 1 ? "" : "s"}
-                                    </p>
-                                  </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {itemsPreview.map((item, index) => (
+                            <div
+                              key={item.id}
+                              className="flex items-start justify-between gap-3 rounded-[18px] border border-neutral-100 bg-neutral-50 p-3.5"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-white">
+                                  <Image
+                                    src={item.image || "/bags.png"}
+                                    alt={item.name}
+                                    fill
+                                    className="object-contain p-1.5"
+                                  />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-medium text-neutral-950">
+                                    {item.name}
+                                  </p>
+                                  <p className="mt-0.5 text-xs text-neutral-400">
+                                    Qty {item.qty}
+                                  </p>
                                 </div>
                               </div>
-                            );
-                          })}
+
+                              <div className="shrink-0 text-right">
+                                <p className="text-sm font-semibold text-neutral-950">
+                                  {formatNaira(item.price * item.qty)}
+                                </p>
+                                {index === itemsPreview.length - 1 &&
+                                  extraCount > 0 && (
+                                    <p className="mt-0.5 text-xs text-neutral-400">
+                                      +{extraCount} more
+                                    </p>
+                                  )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Card>
 
-                  <div className="rounded-[22px] border border-emerald-100 bg-[#f1fbf4] px-5 py-5 shadow-[0_12px_40px_rgba(15,23,42,0.04)]">
-                    <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white border border-neutral-100">
-                          <Headphones className="h-5 w-5 text-neutral-900" />
+                  {/* Previous orders */}
+                  <Card>
+                    <CardHeader icon={Clock3} title="Previous orders" />
+
+                    <div className="p-5">
+                      {previousOrders.length === 0 ? (
+                        <div className="flex flex-col items-center gap-3 rounded-[18px] border border-dashed border-neutral-200 bg-neutral-50 py-10 text-center">
+                          <Clock3 className="h-6 w-6 text-neutral-300" />
+                          <p className="text-sm text-neutral-400">
+                            No other orders for this email.
+                          </p>
                         </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {previousOrders.map((prev) => (
+                            <div
+                              key={prev.id}
+                              className="flex items-start justify-between gap-3 rounded-[18px] border border-emerald-100 bg-[#f1fbf4] p-4"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white bg-white">
+                                  <Image
+                                    src={prev.items[0]?.image || "/bags.png"}
+                                    alt={prev.orderCode}
+                                    fill
+                                    className="object-contain p-1.5"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="font-mono text-sm font-semibold text-neutral-950">
+                                    {prev.orderCode}
+                                  </p>
+                                  <p className="mt-0.5 text-xs text-neutral-500">
+                                    {formatDate(prev.createdAt)}
+                                  </p>
+                                  <span className="mt-1.5 inline-block rounded-full border border-emerald-200 bg-white px-2.5 py-0.5 text-[11px] font-medium text-emerald-700">
+                                    {statusLabel(prev.status)}
+                                  </span>
+                                </div>
+                              </div>
 
+                              <div className="shrink-0 text-right">
+                                <p className="text-sm font-semibold text-neutral-950">
+                                  {formatNaira(prev.total)}
+                                </p>
+                                <p className="mt-0.5 text-xs text-neutral-400">
+                                  {prev.items.length} item
+                                  {prev.items.length === 1 ? "" : "s"}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+
+                  {/* Support banner */}
+                  <div className="rounded-[22px] border border-emerald-100 bg-[#f1fbf4] px-5 py-5">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-white">
+                          <Headphones className="h-4 w-4 text-emerald-700" />
+                        </div>
                         <div>
-                          <h3 className="text-[16px] font-semibold text-neutral-950">
+                          <p className="text-sm font-semibold text-neutral-950">
                             Need help with this order?
-                          </h3>
+                          </p>
+                          <p className="mt-0.5 text-xs text-neutral-500">
+                            Our team is available to assist you.
+                          </p>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2.5">
                         <Link
                           href="/faq"
-                          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:underline"
+                          className="inline-flex h-9 items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 text-xs font-medium text-neutral-700 transition hover:bg-emerald-50"
                         >
-                          <CircleHelp className="h-4 w-4" />
-                          View FAQs
+                          <CircleHelp className="h-3.5 w-3.5" />
+                          FAQs
                         </Link>
-
                         <Link
                           href="/contact-us"
-                          className="inline-flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-800"
+                          className="inline-flex h-9 items-center gap-2 rounded-full bg-emerald-700 px-4 text-xs font-semibold text-white transition hover:bg-emerald-800"
                         >
-                          <Package className="h-4 w-4" />
+                          <Headphones className="h-3.5 w-3.5" />
                           Contact support
                         </Link>
                       </div>
@@ -441,21 +517,18 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                   </div>
                 </div>
 
+                {/* Sidebar: summary */}
                 <div className="space-y-5">
-                  <div className="overflow-hidden rounded-[24px] border border-neutral-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.05)]">
-                    <div className="flex items-center gap-2 px-5 py-5">
-                      <Package className="h-4 w-4 text-emerald-700" />
-                      <h3 className="text-[18px] font-semibold text-neutral-950">
-                        Summary
-                      </h3>
-                    </div>
+                  <Card>
+                    <CardHeader icon={Package} title="Summary" />
 
-                    <div className="px-5 pb-5">
+                    <div className="p-5">
                       <div className="space-y-3 text-sm">
+                        {/* Payment */}
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500">Payment</span>
                           <span
-                            className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                               paid
                                 ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                                 : "border-amber-200 bg-amber-50 text-amber-700"
@@ -465,10 +538,11 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                           </span>
                         </div>
 
+                        {/* Status */}
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500">Status</span>
                           <span
-                            className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                            className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                               paid
                                 ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                                 : "border-amber-200 bg-amber-50 text-amber-700"
@@ -478,6 +552,15 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                           </span>
                         </div>
 
+                        {/* Delivery */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-neutral-500">Delivery</span>
+                          <span className="font-medium capitalize text-neutral-950">
+                            {order.deliveryMethod}
+                          </span>
+                        </div>
+
+                        {/* Items */}
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-500">Items</span>
                           <span className="font-medium text-neutral-950">
@@ -485,6 +568,7 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                           </span>
                         </div>
 
+                        {/* Price breakdown */}
                         <div className="border-t border-dashed border-neutral-200 pt-3">
                           <div className="flex items-center justify-between">
                             <span className="text-neutral-500">Subtotal</span>
@@ -504,7 +588,9 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
 
                         <div className="border-t border-dashed border-neutral-200 pt-3">
                           <div className="flex items-center justify-between">
-                            <span className="text-neutral-500">Total</span>
+                            <span className="text-sm font-medium text-neutral-500">
+                              Total
+                            </span>
                             <span className="text-[20px] font-semibold text-emerald-700">
                               {formatNaira(order.total)}
                             </span>
@@ -512,7 +598,7 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 </div>
               </section>
             </div>

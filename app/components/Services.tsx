@@ -46,7 +46,7 @@ export default function Services() {
       {/* Content */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-8 pb-20">
         <div className="max-w-xl flex flex-col gap-5">
-          <h3 className="text-3xl md:text-4xl lg:text-6xl font-semibold text-white leading-[1.2]">
+          <h3 className="text-2xl md:text-3xl lg:text-5xl font-semibold text-white leading-[1.2]">
             {current.heading}
           </h3>
 
