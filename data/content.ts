@@ -260,7 +260,7 @@ export const footerLinks: FooterLinkGroup = {
   ],
   Template: [
     { label: "404", href: "/404" },
-    { label: "Password protected", href: "/401" },
+    { label: "Password protected", href: "/unauthorized" },
     { label: "Change log", href: "/changelog" },
     { label: "License", href: "/license" },
     { label: "Style guide", href: "/style-guide" },
