@@ -177,7 +177,7 @@ export default function AboutPage() {
                 </div>
                 <div>
                   <p className="text-5xl font-black tracking-tight text-white">
-                    5+
+                    20+
                   </p>
                   <p className="mt-2 text-sm font-medium text-emerald-400">
                     Years in business
