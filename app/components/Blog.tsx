@@ -14,7 +14,7 @@ export default function Blog() {
               <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
               Blogs
             </div>
-            <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 leading-[1.25]">
+            <h2 className="text-3xl md:text-4xl font-semibold text-neutral-900 leading-[1.25]">
               Stay Informed. Stay Empowered.
             </h2>
           </div>

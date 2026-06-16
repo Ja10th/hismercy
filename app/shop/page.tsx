@@ -157,7 +157,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 Shop
               </div>
 
-              <h1 className="text-center text-3xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
+              <h1 className="text-center text-2xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
                 Browse the full collection.
               </h1>
 

@@ -32,7 +32,7 @@ export default function Hero() {
 
           <div className="flex flex-col gap-8 lg:col-span-1">
             <div className="flex flex-col items-center justify-center gap-6 md:items-start">
-              <p className="max-w-sm text-center text-[16px] leading-[1.75] text-white/80 lg:max-w-md md:text-left">
+              <p className="max-w-sm text-center text-[16px] lg:text-[20px] leading-[1.75] text-white/80 lg:max-w-2xl md:text-left">
                 Supplying maize, soya, wheat offal and branded feeds. Browse
                 trusted feed brands, place orders, and get reliable delivery
                 across Ekiti.

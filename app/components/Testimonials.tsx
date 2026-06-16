@@ -26,7 +26,7 @@ export default function Testimonials() {
             Testimonial
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-medium text-neutral-900 leading-[1.25] text-center">
+          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-900 leading-[1.25] text-center">
             What Our Customers Say
           </h2>
         </div>

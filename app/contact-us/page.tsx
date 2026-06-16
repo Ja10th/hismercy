@@ -1,11 +1,22 @@
+// app/contact/page.tsx
 "use client";
 
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Mail, MapPin, Phone, MessageSquare, Send, Clock } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  MessageSquare,
+  Send,
+  Clock,
+  CheckCircle2,
+} from "lucide-react";
+import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { z } from "zod";
+import { contactSchema } from "@/lib/contact-schema";
 
-type FormState = {
+type ContactValues = {
   name: string;
   email: string;
   phone: string;
@@ -15,12 +26,12 @@ type FormState = {
 
 type Status = "idle" | "loading" | "success" | "error";
 
-const WHATSAPP_NUMBER = "2348000000000"; // replace with real number
 const SUPPORT_EMAIL = "support@mercyagric.com";
+const WHATSAPP_NUMBER = "2348000000000";
+const PHONE = "+234 800 000 0000";
 const ADDRESS = "Ado-Ekiti, Ekiti State, Nigeria";
-const PHONE = "+234 800 000 0000"; // replace with real number
 
-const subjects = [
+const subjectOptions = [
   "Order enquiry",
   "Delivery question",
   "Product availability",
@@ -29,105 +40,159 @@ const subjects = [
   "Other",
 ];
 
-function emptyForm(): FormState {
-  return { name: "", email: "", phone: "", subject: "", message: "" };
+function emptyForm(): ContactValues {
+  return {
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  };
+}
+
+function zodErrorsToRecord<T extends string>(
+  error: z.ZodError,
+): Partial<Record<T, string>> {
+  const flattened = error.flatten().fieldErrors;
+  const output: Partial<Record<T, string>> = {};
+
+  for (const [key, value] of Object.entries(flattened)) {
+    if (Array.isArray(value) && value[0]) {
+      output[key as T] = value[0];
+    }
+  }
+
+  return output;
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState<FormState>(emptyForm);
+  const [form, setForm] = useState<ContactValues>(emptyForm());
+  const [errors, setErrors] = useState<Partial<Record<keyof ContactValues, string>>>({});
   const [status, setStatus] = useState<Status>("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [message, setMessage] = useState<string>("");
+
+  const inputClass =
+    "h-12 w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-300 focus:bg-white";
+
+  const hasErrors = useMemo(() => Object.keys(errors).length > 0, [errors]);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name as keyof ContactValues]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setStatus("idle");
+    setMessage("");
+
+    const parsed = contactSchema.safeParse(form);
+
+    if (!parsed.success) {
+      setErrors(zodErrorsToRecord<keyof ContactValues>(parsed.error));
+      setStatus("error");
+      return;
+    }
+
+    setErrors({});
     setStatus("loading");
-    setErrorMsg("");
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(parsed.data),
       });
 
+      const data = (await res.json()) as
+        | { ok: true; message: string }
+        | { error: string; fieldErrors?: Partial<Record<keyof ContactValues, string[]>> };
+
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
-        throw new Error(data.error ?? "Something went wrong");
+        if ("fieldErrors" in data && data.fieldErrors) {
+          const nextErrors: Partial<Record<keyof ContactValues, string>> = {};
+          for (const [key, value] of Object.entries(data.fieldErrors)) {
+            if (value?.[0]) {
+              nextErrors[key as keyof ContactValues] = value[0];
+            }
+          }
+          setErrors(nextErrors);
+        }
+        throw new Error("error" in data ? data.error : "Something went wrong.");
       }
 
+      const successData = data as { ok: true; message: string };
+      setMessage(successData.message);
       setStatus("success");
       setForm(emptyForm());
     } catch (err) {
       setStatus("error");
-      setErrorMsg(
-        err instanceof Error ? err.message : "Failed to send message.",
-      );
+      if (err instanceof Error) {
+        setMessage(err.message);
+      } else {
+        setMessage("Failed to send your message.");
+      }
     }
   };
-
-  const inputClass =
-    "h-12 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-300 focus:bg-white";
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-neutral-50">
-
-        {/* Header */}
-        <div className="border-b border-neutral-100 bg-white px-6 pt-32 md:pt-40 pb-20 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">
+        <section className="border-b border-neutral-100 bg-white px-6 pt-32 pb-12 text-center md:pt-40 md:pb-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">
             Get in touch
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
             We are here to help.
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-500">
-            Questions about an order, pricing for a bulk purchase, or anything else — send us a message and we will get back to you.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-neutral-500 md:text-lg">
+            Questions about an order, pricing for a bulk purchase, or anything else?
+            Send us a message and we will get back to you quickly.
           </p>
-        </div>
+        </section>
 
-        <div className="mx-auto max-w-5xl px-6 py-14">
-          <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-
-            {/* ── Contact form ── */}
-            <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] sm:p-8">
-
+        <section className="mx-auto max-w-6xl px-6 py-14">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.04)] sm:p-8">
               {status === "success" ? (
-                <div className="flex h-full min-h-[400px] flex-col items-center justify-center text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-                    <Send className="h-7 w-7 text-emerald-600" strokeWidth={1.5} />
+                <div className="flex min-h-[460px] flex-col items-center justify-center rounded-3xl bg-gradient-to-b from-emerald-50 to-white px-6 py-10 text-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-600 text-white shadow-sm">
+                    <CheckCircle2 className="h-8 w-8" strokeWidth={1.7} />
                   </div>
-                  <h2 className="mt-5 text-xl font-semibold text-neutral-950">
-                    Message sent
+                  <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700">
+                    Message received
+                  </p>
+                  <h2 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">
+                    Thanks for reaching out.
                   </h2>
-                  <p className="mt-2 max-w-xs text-sm text-neutral-500">
-                    Thank you for reaching out. We will get back to you within one business day.
+                  <p className="mt-3 max-w-sm text-sm leading-7 text-neutral-600">
+                    {message || "We will get back to you within one business day."}
                   </p>
                   <button
                     onClick={() => setStatus("idle")}
-                    className="mt-8 inline-flex h-10 items-center rounded-full border border-neutral-200 px-5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
+                    className="mt-8 inline-flex h-11 items-center rounded-full bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800"
                   >
                     Send another message
                   </button>
                 </div>
               ) : (
                 <>
-                  <h2 className="text-lg font-semibold text-neutral-950">
-                    Send us a message
-                  </h2>
-                  <p className="mt-1 text-sm text-neutral-500">
-                    Fill in the form and we will respond within one business day.
-                  </p>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold tracking-tight text-neutral-950">
+                      Send us a message
+                    </h2>
+                    <p className="mt-2 text-sm text-neutral-500">
+                      Fill in the form below and we will respond as soon as possible.
+                    </p>
+                  </div>
 
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <label className="space-y-1.5">
                         <span className="text-xs font-medium text-neutral-700">
@@ -135,13 +200,17 @@ export default function ContactPage() {
                         </span>
                         <input
                           name="name"
-                          required
                           value={form.name}
                           onChange={handleChange}
-                          placeholder="Your name"
                           className={inputClass}
+                          placeholder="Your name"
+                          autoComplete="name"
                         />
+                        {errors.name ? (
+                          <p className="text-xs text-red-600">{errors.name}</p>
+                        ) : null}
                       </label>
+
                       <label className="space-y-1.5">
                         <span className="text-xs font-medium text-neutral-700">
                           Email address <span className="text-red-500">*</span>
@@ -149,12 +218,15 @@ export default function ContactPage() {
                         <input
                           name="email"
                           type="email"
-                          required
                           value={form.email}
                           onChange={handleChange}
-                          placeholder="you@example.com"
                           className={inputClass}
+                          placeholder="you@example.com"
+                          autoComplete="email"
                         />
+                        {errors.email ? (
+                          <p className="text-xs text-red-600">{errors.email}</p>
+                        ) : null}
                       </label>
                     </div>
 
@@ -168,10 +240,15 @@ export default function ContactPage() {
                           type="tel"
                           value={form.phone}
                           onChange={handleChange}
-                          placeholder="08012345678"
                           className={inputClass}
+                          placeholder="08012345678"
+                          autoComplete="tel"
                         />
+                        {errors.phone ? (
+                          <p className="text-xs text-red-600">{errors.phone}</p>
+                        ) : null}
                       </label>
+
                       <label className="space-y-1.5">
                         <span className="text-xs font-medium text-neutral-700">
                           Subject <span className="text-red-500">*</span>
@@ -179,13 +256,12 @@ export default function ContactPage() {
                         <div className="relative">
                           <select
                             name="subject"
-                            required
                             value={form.subject}
                             onChange={handleChange}
-                            className="h-12 w-full appearance-none rounded-xl border border-neutral-200 bg-neutral-50 px-4 pr-10 text-sm outline-none transition focus:border-emerald-300 focus:bg-white"
+                            className="h-12 w-full appearance-none rounded-2xl border border-neutral-200 bg-neutral-50 px-4 pr-10 text-sm outline-none transition focus:border-emerald-300 focus:bg-white"
                           >
                             <option value="">Select a subject</option>
-                            {subjects.map((s) => (
+                            {subjectOptions.map((s) => (
                               <option key={s} value={s}>
                                 {s}
                               </option>
@@ -195,6 +271,9 @@ export default function ContactPage() {
                             ▾
                           </span>
                         </div>
+                        {errors.subject ? (
+                          <p className="text-xs text-red-600">{errors.subject}</p>
+                        ) : null}
                       </label>
                     </div>
 
@@ -204,23 +283,27 @@ export default function ContactPage() {
                       </span>
                       <textarea
                         name="message"
-                        required
                         value={form.message}
                         onChange={handleChange}
-                        placeholder="Tell us how we can help…"
-                        rows={5}
-                        className="w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-300 focus:bg-white"
+                        rows={6}
+                        className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm outline-none transition placeholder:text-neutral-400 focus:border-emerald-300 focus:bg-white"
+                        placeholder="Tell us how we can help..."
                       />
+                      {errors.message ? (
+                        <p className="text-xs text-red-600">{errors.message}</p>
+                      ) : null}
                     </label>
 
-                    {status === "error" && errorMsg ? (
-                      <p className="text-xs text-red-600">{errorMsg}</p>
+                    {status === "error" && message ? (
+                      <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {message}
+                      </div>
                     ) : null}
 
                     <button
                       type="submit"
                       disabled={status === "loading"}
-                      className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-emerald-700 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
+                      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-700 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Send className="h-4 w-4" />
                       {status === "loading" ? "Sending…" : "Send message"}
@@ -230,30 +313,24 @@ export default function ContactPage() {
               )}
             </div>
 
-            {/* ── Contact info sidebar ── */}
             <div className="space-y-4">
-
-              {/* WhatsApp — prominent for Nigerian users */}
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 transition hover:bg-emerald-100"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600">
                   <MessageSquare className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-emerald-900">
                     Chat on WhatsApp
                   </p>
-                  <p className="text-xs text-emerald-700">
-                    Fastest way to reach us
-                  </p>
+                  <p className="text-xs text-emerald-700">Fastest way to reach us</p>
                 </div>
               </a>
 
-              {/* Info cards */}
               <div className="rounded-3xl border border-neutral-200 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-neutral-400">
                   Contact details
@@ -296,13 +373,14 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-xs font-medium text-neutral-500">Address</p>
-                      <p className="text-sm font-medium text-neutral-900">{ADDRESS}</p>
+                      <p className="text-sm font-medium text-neutral-900">
+                        {ADDRESS}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Hours */}
               <div className="rounded-3xl border border-neutral-200 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <div className="mb-4 flex items-center gap-2">
                   <Clock className="h-4 w-4 text-neutral-400" />
@@ -310,6 +388,7 @@ export default function ContactPage() {
                     Business hours
                   </p>
                 </div>
+
                 <div className="space-y-2 text-sm">
                   {[
                     { day: "Monday – Friday", hours: "8:00 am – 5:00 pm" },
@@ -333,13 +412,16 @@ export default function ContactPage() {
                     </div>
                   ))}
                 </div>
+
                 <p className="mt-3 text-xs text-neutral-400">
                   Response times may vary on public holidays.
                 </p>
               </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {hasErrors && status === "error" ? null : null}
       </main>
       <Footer />
     </>

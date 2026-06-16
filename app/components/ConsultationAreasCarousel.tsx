@@ -1,163 +1,102 @@
-"use client";
-
-import { useState } from "react";
-import Image from "next/image";
-import {
-  ShieldCheck,
-  Stethoscope,
-  Truck,
-  Wheat,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
-
-const consultationAreas = [
+const areas = [
   {
-    icon: Stethoscope,
+    number: "01",
     title: "Farm problem review",
     paragraph:
-      "Share the issue you are facing and get practical guidance on the next step.",
+      "Share the issue you are facing and get practical guidance on the next step ",
     image:
-      "https://images.unsplash.com/photo-1612170153139-6f881ff067e0?q=80&w=2370&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1612170153139-6f881ff067e0?q=80&w=2370&auto=format&fit=crop",
+    tag: "Diagnosis",
   },
   {
-    icon: Wheat,
+    number: "02",
     title: "Feed and nutrition advice",
     paragraph:
-      "We help farmers choose the right feed and materials for better performance.",
+      "To choose the right feed and materials for better flock and herd performance.",
     image:
-      "https://images.unsplash.com/photo-1588597989061-b60ad0eefdbf?q=80&w=2369&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1588597989061-b60ad0eefdbf?q=80&w=2369&auto=format&fit=crop",
+    tag: "Nutrition",
   },
   {
-    icon: Truck,
+    number: "03",
     title: "Supply and delivery help",
     paragraph:
-      "Need sourcing or delivery support? We help make the process easier.",
+      "Need logistics support? We help you plan quantities, routes, and timing.",
     image:
-      "https://images.unsplash.com/photo-1573333744619-00d101e99133?q=80&w=2676&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1573333744619-00d101e99133?q=80&w=2676&auto=format&fit=crop",
+    tag: "Logistics",
   },
   {
-    icon: ShieldCheck,
+    number: "04",
     title: "General farm support",
     paragraph:
-      "Get simple consultation for poultry, livestock, and feed-related questions.",
+      "Direct consultation for poultry, livestock, and feed-related questions of any size.",
     image:
-      "https://images.unsplash.com/photo-1545251765-6aad90d25972?q=80&w=2370&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1545251765-6aad90d25972?q=80&w=2370&auto=format&fit=crop",
+    tag: "Support",
   },
 ];
 
-export default function ConsultationAreasCarousel() {
-  const [active, setActive] = useState(0);
-  const current = consultationAreas[active];
-
-  const prev = () =>
-    setActive(
-      (p) => (p - 1 + consultationAreas.length) % consultationAreas.length,
-    );
-
-  const next = () => setActive((p) => (p + 1) % consultationAreas.length);
-
-  const Icon = current.icon;
-
+// Variation C — Tall image cards with bold number and overlay text
+export default function VariationC() {
   return (
-    <section className="relative min-h-[85vh] overflow-hidden bg-[#f2f0eb]">
-      <div
-        key={active}
-        className="absolute inset-0 md:hidden animate-pan-mobile"
-        style={{
-          backgroundImage: `url(${current.image})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "auto 100%",
-          backgroundPosition: "0% center",
-        }}
-      />
-
-      <div className="absolute inset-0 hidden md:block">
-        <img
-          key={active}
-          src={current.image}
-          alt={current.title}
-          className="object-cover"
-        />
-      </div>
-
-      <div className="absolute inset-0 bg-black/35" />
-      <div className="pointer-events-none absolute bottom-0 left-0 h-96 w-full bg-gradient-to-t from-black via-black/65 to-transparent" />
-
-      <div className="relative z-10 flex min-h-[85vh] items-end">
-        <div className="mx-auto w-full max-w-7xl px-5 pb-16 md:px-8 md:pb-20">
-          <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/70">
-              Consultation areas
-            </p>
-
-            <div className="mt-5 flex items-center gap-3">
-              <h3 className="text-2xl md:text-3xl lg:text-5xl font-semibold text-white leading-[1.2]">
-                {current.title}
-              </h3>
-            </div>
-
-            <p className="mt-5 max-w-xl text-base leading-[1.85] text-white/80 lg:text-[20px]">
-              {current.paragraph}
-            </p>
-
-            <div className="mt-8 flex items-center gap-4">
-              <button
-                onClick={prev}
-                aria-label="Previous"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition hover:border-white/70 hover:bg-white/20"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </button>
-
-              <div className="flex items-center gap-2 text-white/75 text-sm">
-                <span className="text-xl font-semibold text-white">
-                  {String(active + 1).padStart(2, "0")}
-                </span>
-                <span className="opacity-50">/</span>
-                <span>{String(consultationAreas.length).padStart(2, "0")}</span>
-              </div>
-
-              <button
-                onClick={next}
-                aria-label="Next"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-sm transition hover:border-white/70 hover:bg-white/20"
-              >
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="mt-5 flex gap-2">
-              {consultationAreas.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  aria-label={`Slide ${i + 1}`}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    i === active ? "w-12 bg-white" : "w-8 bg-white/30"
-                  }`}
-                />
-              ))}
-            </div>
+    <section className="border-t border-neutral-100 bg-emerald-800 px-8 py-20 md:py-28">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="mt-2 text-3xl md:text-4xl font-semibold text-white leading-[1.25]">
+              What we help with.
+            </h2>
           </div>
+          <p className="max-w-xs text-[16px] lg:text-[20px] md:text-base leading-relaxed text-white/40">
+            Get Professional help today. 
+          </p>
+        </div>
+
+        {/* 4-column card strip */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {areas.map((area) => (
+            <div
+              key={area.number}
+              className="group relative overflow-hidden rounded-2xl"
+              style={{ minHeight: "480px" }}
+            >
+              {/* Image */}
+              <img
+                src={area.image}
+                alt={area.title}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+
+              {/* Gradient — strong at bottom, fades to transparent */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+              {/* Number — top left, big and faint */}
+              {/* <span className="absolute left-5 top-5 text-[3.5rem] font-black leading-none text-white/40 select-none">
+                {area.number}
+              </span> */}
+
+              {/* Tag pill — top right */}
+              <span className="absolute right-4 top-5 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/60 backdrop-blur-sm">
+                {area.tag}
+              </span>
+
+              {/* Content — bottom */}
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <h3 className="text-lg lg:text-xl font-extrabold leading-tight tracking-tight text-white">
+                  {area.title}
+                </h3>
+                {/* Paragraph slides up on hover */}
+                <p className="mt-2 text-[16px] lg:text-[20px] md:text-base leading-relaxed text-white/0 transition-all duration-300 group-hover:text-white/70 max-h-0 group-hover:max-h-24 overflow-hidden">
+                  {area.paragraph}
+                </p>
+                {/* Thin emerald line — always visible */}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes panMobile {
-          from {
-            background-position: 0% center;
-          }
-          to {
-            background-position: 100% center;
-          }
-        }
-
-        .animate-pan-mobile {
-          animation: panMobile 4s linear forwards;
-          will-change: background-position;
-        }
-      `}</style>
     </section>
   );
 }

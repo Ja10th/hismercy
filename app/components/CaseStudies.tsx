@@ -27,7 +27,7 @@ export default function Consultation() {
             Consultation
           </div>
 
-          <h2 className="text-3xl md:text-4xl font-normal text-neutral-900 leading-[1.25]">
+          <h2 className="text-3xl md:text-4xl font-semibold text-neutral-900 leading-[1.25]">
             Real Results. Real Growth.
           </h2>
         </div>
@@ -76,7 +76,7 @@ export default function Consultation() {
                   {item.title}
                 </h3>
 
-                <p className="text-[16px] md:text-base text-neutral-600 leading-[1.7] max-w-md">
+                <p className="text-[16px] lg:text-[20px] md:text-base text-neutral-600 leading-[1.7] max-w-md">
                   {item.description}
                 </p>
               </div>

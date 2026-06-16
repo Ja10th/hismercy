@@ -23,7 +23,7 @@ export default function CTA() {
           <h1 className="text-2xl md:text-3xl lg:text-5xl font-semibold text-white leading-[1.2] tracking-tight">
             Quality Feed and Farm Supplies for Better Growth
           </h1>
-          <p className="text-white/82 text-[16px] leading-[1.7] max-w-md">
+          <p className="text-white/82 text-[16px] lg:text-[20px] leading-[1.7] max-w-md md:max-w-2xl">
             Trust Mercy Agricultural Services Services for branded feeds, feed ingredients, and reliable farm supplies that support healthier birds, stronger livestock, and better farm results.
           </p>
           <div className="flex gap-4 flex-wrap">
