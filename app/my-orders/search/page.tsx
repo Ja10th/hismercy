@@ -189,7 +189,7 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
 
   return (
     <>
-      <NavbarWrapper />
+      <Navbar />
 
       <main className="min-h-screen px-4 pb-16 pt-24 md:pt-32 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">

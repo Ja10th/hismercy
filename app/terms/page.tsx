@@ -21,7 +21,7 @@ const sections = [
 export default function TermsPage() {
   return (
     <>
-      <NavbarWrapper />
+      <Navbar />
       <main className="min-h-screen bg-white">
 
         <div className="border-b border-neutral-100 bg-neutral-50 px-6 pt-32 md:pt-40 pb-20 text-center">
