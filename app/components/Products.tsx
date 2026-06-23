@@ -52,7 +52,7 @@ export default function Products({ products }: ProductsProps) {
 
           <Link
             href="/shop"
-            className="inline-flex items-center rounded-full border border-black/25 px-6 py-3 text-[15px] font-medium text-neutral-900 transition-all duration-200 hover:bg-neutral-900 hover:text-white"
+            className="inline-flex items-center rounded-full border bg-emerald-700 text-white border-black/25 px-6 py-3 text-[15px] font-medium transition-all duration-200 hover:bg-emerald-800 hover:text-white"
           >
             View All Products
           </Link>

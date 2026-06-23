@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         hostname: "pixabay.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/**",
+      },
     ],
   },
 

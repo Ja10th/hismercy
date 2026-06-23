@@ -18,7 +18,7 @@ import ConsultationAreasCarousel from "../components/ConsultationAreasCarousel";
 import CTA from "../components/CTA";
 import Blog from "../components/Blog";
 
-const WHATSAPP_NUMBER = "2348000000000"; 
+const WHATSAPP_NUMBER = "2348000000000";
 
 const steps = [
   {
@@ -109,7 +109,7 @@ export default function ConsultationPage() {
 
       <main>
         {/* ── Hero ──────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-emerald-950 pb-28 pt-28 md:pt-36">
+        <section className="relative overflow-hidden bg-emerald-950 pb-14 md:pb-28 pt-28 md:pt-36">
           {/* Horizontal field lines */}
           <div
             className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-8 opacity-[0.07]"
@@ -125,47 +125,27 @@ export default function ConsultationPage() {
             className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
             aria-hidden
           >
-            <span className="select-none text-[22vw] font-black uppercase leading-none tracking-tighter text-emerald-900/20 ">
-              CONSULT
+            <span className="select-none text-[24vw] md:text-[22vw]  font-black uppercase leading-none tracking-tighter text-emerald-900/20 ">
+              HELP
             </span>
           </div>
 
           <div className="relative z-10 mx-auto max-w-4xl px-6 text-center md:px-10">
             <h1 className="mt-6 text-[clamp(2.4rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-tight text-white">
-              Advice grounded in <br className="hidden sm:block" />
-              real farming.
+              Speak with Experts
             </h1>
 
-            <p className="mx-auto mt-6 max-w-xl text-[16px] lg:text-[20px] md:text-base  leading-relaxed text-white/55 ">
-              Not sure what feed to buy, what material to use, or how to handle
-              a farm issue? Speak with us first; get a clear answer, and move
-              forward with confidence.
-            </p>
-
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link
-                href="/contact-us"
-                className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-400"
-              >
-                Start a consultation
-                <ArrowUpRight size={15} strokeWidth={2.5} />
-              </Link>
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                className="text-sm font-semibold text-white/45 underline underline-offset-4 decoration-white/20 transition hover:text-white/80 hover:decoration-white/50"
-              >
-                Chat via whatsapp
-              </a>
-            </div>
+            
           </div>
         </section>
 
-        <section id="how-it-works" className="bg-neutral-50 py-20 md:py-28">
+        <section id="how-it-works" className="bg-neutral-50 pt-10">
           <div className="mx-auto max-w-7xl px-8">
             <div className="mb-14 text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-neutral-950 md:text-4xl">
-                Four steps to clarity.
-              </h2>
+             <p className="mx-auto mt-6 max-w-xl text-[16px] lg:text-[20px] md:text-base  leading-relaxed text-black/55 ">
+              Not sure what feed to buy, what material to use, or how to handle
+              a farm issue? Speak with us first.
+            </p>
             </div>
 
             <div className="relative mx-auto max-w-4xl">
@@ -183,7 +163,7 @@ export default function ConsultationPage() {
                     >
                       <div className="relative pl-12 md:pl-0">
                         <div
-                          className={`absolute left-0 top-1 h-8 w-8 rounded-full md:hidden  bg-emerald-600 md:left-1/2 md:-ml-4 ${
+                          className={`absolute left-2 top-1 h-4 w-4 rounded-full md:hidden  bg-emerald-600 md:left-1/2 md:-ml-4 ${
                             left ? "md:-translate-x-1/2" : "md:-translate-x-1/2"
                           }`}
                         />
@@ -206,6 +186,15 @@ export default function ConsultationPage() {
                 })}
               </div>
             </div>
+          </div>
+          <div className="py-10 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/contact-us"
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-700 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-800"
+            >
+              Start a Consultation
+              <ArrowUpRight size={15} strokeWidth={2.5} />
+            </Link>
           </div>
         </section>
 

@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2026";
 const COMPANY = "Mercy Agricultural Services";
-const EMAIL = "support@mercyagric.com";
+const EMAIL = "mercyagriculturalservicesltd@gmail.com";
 
 const sections = [
   { id: "ownership", title: "Ownership" },

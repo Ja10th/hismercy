@@ -88,27 +88,42 @@ export default async function BlogPage({
     <>
       <Navbar />
       <main className="min-h-screen bg-white">
-        <section className="relative overflow-hidden border-b border-neutral-200 bg-white">
-          <div className="mx-auto max-w-7xl px-8 pb-5 pt-32 md:pt-32 md:pb-10">
-            <div>
-              <p className="text-xs md:text-sm text-center uppercase tracking-[0.2em] text-emerald-600">
-                Our Blog
-              </p>
+        <section className="relative overflow-hidden bg-emerald-950 pb-14 md:pb-28 pt-28 md:pt-36">
+          {/* Horizontal field lines */}
+          <div
+            className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-8 opacity-[0.07]"
+            aria-hidden
+          >
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="h-px w-full bg-emerald-400" />
+            ))}
+          </div>
 
-              <h1 className="mt-4 text-4xl font-semibold text-center tracking-tight text-neutral-950 md:text-5xl">
-                Stay Informed.
-              </h1>
+          {/* Large faint background word */}
+          <div
+            className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+            aria-hidden
+          >
+            <span className="select-none text-[24vw] md:text-[22vw]  font-black uppercase leading-none tracking-tighter text-emerald-900/20 ">
+              BLOG
+            </span>
+          </div>
 
-              <p className="mt-5 max-w-2xl mx-auto text-base leading-7 text-center text-neutral-600 md:text-lg">
-                Insights, tips, and stories to help your business grow, make
+          <div className="relative z-10 mx-auto max-w-4xl px-6 text-center md:px-10">
+            <h1 className="mt-6 text-[clamp(2.4rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-tight text-white">
+               Stay Informed 
+            </h1>
+
+            {/* <p className="mx-auto mt-6 max-w-xl text-[16px] lg:text-[20px] md:text-base  leading-relaxed text-white/55 ">
+             Insights, tips, and stories to help your business grow, make
                 better decisions, and stay ahead.
-              </p>
-            </div>
+            </p> */}
           </div>
         </section>
+      
 
         <section className="mx-auto max-w-[1280px] px-8 pb-20 pt-10">
-          <div className="flex flex-col gap-4 rounded-[2rem]  bg-white p-4  md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-4 rounded-[2rem]  bg-white  md:flex-row md:items-center md:justify-between">
             <BlogSearchBar initialQuery={q} />
 
             <div className="text-sm text-neutral-500">
@@ -150,7 +165,7 @@ export default async function BlogPage({
                     </div>
 
                     <div className="flex flex-1 flex-col p-6">
-                      <h2 className="text-base md:text-xl font-medium text-neutral-900 leading-[1.4] flex-1">
+                      <h2 className=" text-[16px] md:text-base lg:text-[20px] font-medium text-neutral-900 leading-[1.4] flex-1">
                         {post.title}
                       </h2>
 

@@ -7,11 +7,11 @@ import {
   Mail,
   MapPin,
   Phone,
-  MessageSquare,
   Send,
   Clock,
   CheckCircle2,
 } from "lucide-react";
+import { ImWhatsapp } from "react-icons/im";
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { z } from "zod";
 import { contactSchema } from "@/lib/contact-schema";
@@ -26,7 +26,7 @@ type ContactValues = {
 
 type Status = "idle" | "loading" | "success" | "error";
 
-const SUPPORT_EMAIL = "support@mercyagric.com";
+const SUPPORT_EMAIL = "mercyagriculturalservicesltd@gmail.com";
 const WHATSAPP_NUMBER = "2348000000000";
 const PHONE = "+234 800 000 0000";
 const ADDRESS = "Ado-Ekiti, Ekiti State, Nigeria";
@@ -67,7 +67,9 @@ function zodErrorsToRecord<T extends string>(
 
 export default function ContactPage() {
   const [form, setForm] = useState<ContactValues>(emptyForm());
-  const [errors, setErrors] = useState<Partial<Record<keyof ContactValues, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ContactValues, string>>
+  >({});
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string>("");
 
@@ -111,7 +113,10 @@ export default function ContactPage() {
 
       const data = (await res.json()) as
         | { ok: true; message: string }
-        | { error: string; fieldErrors?: Partial<Record<keyof ContactValues, string[]>> };
+        | {
+            error: string;
+            fieldErrors?: Partial<Record<keyof ContactValues, string[]>>;
+          };
 
       if (!res.ok) {
         if ("fieldErrors" in data && data.fieldErrors) {
@@ -145,15 +150,12 @@ export default function ContactPage() {
       <Navbar />
       <main className="min-h-screen bg-neutral-50">
         <section className="border-b border-neutral-100 bg-white px-6 pt-32 pb-12 text-center md:pt-40 md:pb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">
-            Get in touch
-          </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-            We are here to help.
+          <h1 className="mt-3 text-[clamp(2.4rem,6vw,5rem)] font-semibold tracking-tight text-neutral-950 ">
+            We are here to <span className="text-emerald-600">help</span>.
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-neutral-500 md:text-lg">
-            Questions about an order, pricing for a bulk purchase, or anything else?
-            Send us a message and we will get back to you quickly.
+            Questions about an order, pricing for a bulk purchase, or anything
+            else? Send us a message and we will get back to you quickly.
           </p>
         </section>
 
@@ -172,7 +174,8 @@ export default function ContactPage() {
                     Thanks for reaching out.
                   </h2>
                   <p className="mt-3 max-w-sm text-sm leading-7 text-neutral-600">
-                    {message || "We will get back to you within one business day."}
+                    {message ||
+                      "We will get back to you within one business day."}
                   </p>
                   <button
                     onClick={() => setStatus("idle")}
@@ -188,7 +191,8 @@ export default function ContactPage() {
                       Send us a message
                     </h2>
                     <p className="mt-2 text-sm text-neutral-500">
-                      Fill in the form below and we will respond as soon as possible.
+                      Fill in the form below and we will respond as soon as
+                      possible.
                     </p>
                   </div>
 
@@ -272,7 +276,9 @@ export default function ContactPage() {
                           </span>
                         </div>
                         {errors.subject ? (
-                          <p className="text-xs text-red-600">{errors.subject}</p>
+                          <p className="text-xs text-red-600">
+                            {errors.subject}
+                          </p>
                         ) : null}
                       </label>
                     </div>
@@ -321,13 +327,15 @@ export default function ContactPage() {
                 className="flex items-center gap-4 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 transition hover:bg-emerald-100"
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-600">
-                  <MessageSquare className="h-5 w-5 text-white" />
+                  <ImWhatsapp className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-emerald-900">
                     Chat on WhatsApp
                   </p>
-                  <p className="text-xs text-emerald-700">Fastest way to reach us</p>
+                  <p className="text-xs text-emerald-700">
+                    Fastest way to reach us
+                  </p>
                 </div>
               </a>
 
@@ -342,7 +350,9 @@ export default function ContactPage() {
                       <Mail className="h-4 w-4 text-neutral-500" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-neutral-500">Email</p>
+                      <p className="text-xs font-medium text-neutral-500">
+                        Email
+                      </p>
                       <a
                         href={`mailto:${SUPPORT_EMAIL}`}
                         className="text-sm font-medium text-neutral-900 hover:text-emerald-700 hover:underline"
@@ -357,7 +367,9 @@ export default function ContactPage() {
                       <Phone className="h-4 w-4 text-neutral-500" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-neutral-500">Phone</p>
+                      <p className="text-xs font-medium text-neutral-500">
+                        Phone
+                      </p>
                       <a
                         href={`tel:${PHONE.replace(/\s/g, "")}`}
                         className="text-sm font-medium text-neutral-900 hover:text-emerald-700 hover:underline"
@@ -372,7 +384,9 @@ export default function ContactPage() {
                       <MapPin className="h-4 w-4 text-neutral-500" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-neutral-500">Address</p>
+                      <p className="text-xs font-medium text-neutral-500">
+                        Address
+                      </p>
                       <p className="text-sm font-medium text-neutral-900">
                         {ADDRESS}
                       </p>

@@ -27,9 +27,6 @@ export default function MyOrdersSearchForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-neutral-700">
-          Email
-        </label>
         <div className="relative">
           <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
           <input
@@ -37,16 +34,13 @@ export default function MyOrdersSearchForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder="Enter your email address"
             className="h-12 w-full rounded-2xl border border-neutral-200 bg-neutral-50 pl-11 pr-4 text-sm outline-none transition placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-neutral-700">
-          Order code
-        </label>
         <input
           type="text"
           required
@@ -70,7 +64,6 @@ export default function MyOrdersSearchForm() {
             </>
           ) : (
             <>
-              <Search className="h-4 w-4" />
               View order
             </>
           )}

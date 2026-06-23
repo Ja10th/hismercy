@@ -9,6 +9,7 @@ type PaginationProps = {
 
 function pageHref(basePath: string, queryString: string, page: number) {
   const params = new URLSearchParams(queryString);
+
   if (page <= 1) params.delete("page");
   else params.set("page", String(page));
 
@@ -33,7 +34,7 @@ export default function ShopPagination({
   }
 
   return (
-    <nav className="mt-10 flex items-center justify-between gap-3">
+    <nav className="mt-10 flex items-center justify-between gap-3 pb-10">
       <div className="flex w-full items-center justify-between sm:hidden">
         <Link
           href={pageHref(basePath, queryString, currentPage - 1)}
@@ -96,7 +97,7 @@ export default function ShopPagination({
               href={pageHref(basePath, queryString, page)}
               className={`rounded-xl border px-4 py-2 text-sm font-medium ${
                 page === currentPage
-                  ? " bg-emerald-700 text-white"
+                  ? "bg-emerald-700 text-white"
                   : "border-neutral-200 text-neutral-700 hover:bg-neutral-50"
               }`}
             >

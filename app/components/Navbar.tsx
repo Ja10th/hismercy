@@ -6,15 +6,22 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { navLinks, assets } from "@/data/content";
 import { useCart } from "./cart/CartProvider";
+import { slugify } from "@/lib/slugify";
 import {
   ChevronDown,
   CircleHelp,
   Minus,
   Plus,
+  Store,
   Trash2,
   UserRound,
   X,
 } from "lucide-react";
+
+type Brand = {
+  id: string;
+  name: string;
+};
 
 function formatNaira(amountInKobo: number) {
   return new Intl.NumberFormat("en-NG", {
@@ -24,25 +31,35 @@ function formatNaira(amountInKobo: number) {
   }).format(amountInKobo / 100);
 }
 
-function ProfileDropdown() {
+/* ---------- shared dropdown styling ---------- */
+
+const PANEL_CLASS =
+  "absolute z-[260] mt-2 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1a] shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all duration-150 ease-out origin-top";
+const PANEL_VISIBLE = "opacity-100 translate-y-0 pointer-events-auto";
+const PANEL_HIDDEN = "opacity-0 -translate-y-1 pointer-events-none";
+const ITEM_CLASS =
+  "flex items-center gap-2.5 px-4 py-3 text-sm text-white/85 transition hover:bg-white/10 hover:text-white";
+
+const MOBILE_CARD_CLASS = "rounded-2xl";
+const MOBILE_ITEM_CLASS =
+  "flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-white/85 transition hover:bg-white/10 hover:text-white";
+
+/* ---------- shared open/outside-click/escape logic ---------- */
+
+function useDropdown() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
 
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
+      if (event.key === "Escape") setOpen(false);
     }
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -58,8 +75,14 @@ function ProfileDropdown() {
     setOpen(false);
   }, [pathname]);
 
+  return { open, setOpen, ref };
+}
+
+function ProfileDropdown() {
+  const { open, setOpen, ref } = useDropdown();
+
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={ref}>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
@@ -68,27 +91,92 @@ function ProfileDropdown() {
         className="inline-flex items-center gap-2 rounded-xl px-2 py-2.5 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-white/20"
       >
         <UserRound className="h-4 w-4" />
-        <ChevronDown className="h-4 w-4 opacity-80" />
+        <ChevronDown
+          className={`h-4 w-4 opacity-80 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
-      {open ? (
-        <div className="absolute right-0 top-full z-[260] mt-3 w-56 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1f1f] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
-          <Link
-            href="/my-orders"
-            className="flex items-center gap-2 px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
-          >
-            <UserRound className="h-4 w-4" />
-            My Profile
-          </Link>
-          <Link
-            href="/contact-us"
-            className="flex items-center gap-2 px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
-          >
-            <CircleHelp className="h-4 w-4" />
-            Help
-          </Link>
+      <div
+        role="menu"
+        className={`${PANEL_CLASS} right-0 top-full w-56 ${
+          open ? PANEL_VISIBLE : PANEL_HIDDEN
+        }`}
+      >
+        <Link role="menuitem" href="/my-orders" className={ITEM_CLASS}>
+          <UserRound className="h-4 w-4" />
+          My Profile
+        </Link>
+        <Link role="menuitem" href="/contact-us" className={ITEM_CLASS}>
+          <CircleHelp className="h-4 w-4" />
+          Help
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function ShopDropdown({ brands }: { brands: Brand[] }) {
+  const { open, setOpen, ref } = useDropdown();
+  const pathname = usePathname();
+  const hasBrands = brands.length > 0;
+  const isShopActive = pathname.startsWith("/shop");
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => hasBrands && setOpen((prev) => !prev)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        disabled={!hasBrands}
+        className={`nav-underline inline-flex items-center gap-1.5 text-[17px] font-semibold transition-colors duration-200 disabled:cursor-default disabled:opacity-60 ${
+          isShopActive ? "text-white/95" : "text-white/90 hover:text-white"
+        }`}
+      >
+        Shop
+        <ChevronDown
+          className={`h-4 w-4 opacity-70 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <div
+        role="menu"
+        className={`${PANEL_CLASS} left-0 top-full w-72 ${
+          open && hasBrands ? PANEL_VISIBLE : PANEL_HIDDEN
+        }`}
+      >
+        <Link
+          role="menuitem"
+          href="/shop"
+          className={`${ITEM_CLASS} border-b border-white/8 font-medium text-white`}
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-700/30 text-emerald-400">
+            <Store className="h-3.5 w-3.5" />
+          </span>
+          All Products
+        </Link>
+
+        <p className="px-4 pb-1 pt-3 text-[10px] uppercase tracking-[0.18em] text-white/35">
+          Shop by brand
+        </p>
+
+        <div className="max-h-72 overflow-y-auto pb-2">
+          {brands.map((b) => (
+            <Link
+              key={b.id}
+              role="menuitem"
+              href={`/shop/brand/${slugify(b.name)}`}
+              className={ITEM_CLASS}
+            >
+              {b.name}
+            </Link>
+          ))}
         </div>
-      ) : null}
+      </div>
     </div>
   );
 }
@@ -98,6 +186,10 @@ export default function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [shopOpenMobile, setShopOpenMobile] = useState(false);
+  const [profileOpenMobile, setProfileOpenMobile] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
 
   const { items, totalItems, subtotal, updateQuantity, removeFromCart } =
     useCart();
@@ -113,7 +205,39 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
     setCartOpen(false);
+    setShopOpenMobile(false);
+    setProfileOpenMobile(false);
   }, [pathname]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadBrands() {
+      try {
+        const res = await fetch("/api/brands", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch brands");
+
+        const data = (await res.json()) as Brand[];
+        if (active) setBrands(data);
+      } catch {
+        if (active) setBrands([]);
+      } finally {
+        if (active) setBrandsLoading(false);
+      }
+    }
+
+    loadBrands();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const navMenuItems = useMemo(
     () => navLinks.map((link) => ({ href: link.href, label: link.label })),
@@ -137,6 +261,10 @@ export default function Navbar() {
 
             <div className="flex items-center gap-8">
               {navMenuItems.map((link) => {
+                if (link.href === "/shop") {
+                  return <ShopDropdown key="shop" brands={brands} />;
+                }
+
                 const active = pathname === link.href;
 
                 return (
@@ -312,7 +440,7 @@ export default function Navbar() {
                         </div>
 
                         <div className="mt-3 flex items-center justify-between gap-1">
-                          <div className="inline-flex items-center rounded-full  p-1">
+                          <div className="inline-flex items-center rounded-full p-1">
                             <button
                               type="button"
                               onClick={() =>
@@ -339,7 +467,7 @@ export default function Navbar() {
                                 }
                               }}
                               inputMode="numeric"
-                              className="h-8 w-14 rounded-full text-center text-sm  text-neutral-950 outline-none [appearance:textfield] focus:border-neutral-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                              className="h-8 w-14 rounded-full text-center text-sm text-neutral-950 outline-none [appearance:textfield] focus:border-neutral-400 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                               aria-label={`Quantity for ${item.name}`}
                             />
 
@@ -414,11 +542,9 @@ export default function Navbar() {
           }`}
         >
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-white/50">
-                Menu
-              </p>
-            </div>
+            <p className="text-xs uppercase tracking-[0.2em] text-white/50">
+              Menu
+            </p>
 
             <button
               onClick={() => setMenuOpen(false)}
@@ -432,6 +558,59 @@ export default function Navbar() {
           <div className="flex-1 overflow-y-auto px-5 py-6">
             <div className="space-y-2">
               {navMenuItems.map((link) => {
+                if (link.href === "/shop") {
+                  return (
+                    <div key="shop" className={MOBILE_CARD_CLASS}>
+                      <button
+                        type="button"
+                        onClick={() => setShopOpenMobile((prev) => !prev)}
+                        className="flex w-full items-center justify-between px-4 py-4 text-[16px] font-medium text-white/90"
+                      >
+                        Shop
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${
+                            shopOpenMobile ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {shopOpenMobile ? (
+                        <div className="border-t border-white/10 p-2">
+                          <Link
+                            href="/shop"
+                            onClick={() => setMenuOpen(false)}
+                            className={MOBILE_ITEM_CLASS}
+                          >
+                            <Store className="h-4 w-4 text-emerald-400" />
+                            All Products
+                          </Link>
+
+                          <p className="px-3 pb-1 pt-3 text-[10px] uppercase tracking-[0.18em] text-white/40">
+                            Shop by brand
+                          </p>
+
+                          {brandsLoading ? (
+                            <p className="px-3 py-3 text-sm text-white/50">
+                              Loading brands...
+                            </p>
+                          ) : (
+                            brands.map((b) => (
+                              <Link
+                                key={b.id}
+                                href={`/shop/brand/${slugify(b.name)}`}
+                                onClick={() => setMenuOpen(false)}
+                                className={MOBILE_ITEM_CLASS}
+                              >
+                                {b.name}
+                              </Link>
+                            ))
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                }
+
                 const active = pathname === link.href;
 
                 return (
@@ -451,33 +630,43 @@ export default function Navbar() {
               })}
             </div>
 
-            <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-white/45">
+            <div className={`mt-6 ${MOBILE_CARD_CLASS}`}>
+              <button
+                type="button"
+                onClick={() => setProfileOpenMobile((prev) => !prev)}
+                className="flex w-full items-center justify-between px-4 py-4 text-[16px] font-medium text-white/90"
+              >
                 Account
-              </p>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    profileOpenMobile ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-              <div className="mt-4 space-y-2">
-                <Link
-                  href="/my-orders"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
-                >
-                  <UserRound className="h-4 w-4" />
-                  My Profile
-                </Link>
-
-                <Link
-                  href="/contact-us"
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-white/90 transition hover:bg-white/10"
-                >
-                  <CircleHelp className="h-4 w-4" />
-                  Help
-                </Link>
-              </div>
+              {profileOpenMobile ? (
+                <div className="border-t border-white/10 p-2">
+                  <Link
+                    href="/my-orders"
+                    onClick={() => setMenuOpen(false)}
+                    className={MOBILE_ITEM_CLASS}
+                  >
+                    <UserRound className="h-4 w-4" />
+                    My Profile
+                  </Link>
+                  <Link
+                    href="/contact-us"
+                    onClick={() => setMenuOpen(false)}
+                    className={MOBILE_ITEM_CLASS}
+                  >
+                    <CircleHelp className="h-4 w-4" />
+                    Help
+                  </Link>
+                </div>
+              ) : null}
             </div>
 
-            <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 p-4">
+            <div className="mt-6 p-4">
               <button
                 type="button"
                 onClick={() => {

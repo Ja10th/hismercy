@@ -13,7 +13,7 @@ const links = [
 export default function NotFound() {
   return (
     <>
-      <Navbar />
+      <NavbarWrapper />
       <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6 py-20">
         <div className="mx-auto w-full max-w-lg text-center">
 

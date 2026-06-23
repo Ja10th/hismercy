@@ -15,7 +15,7 @@ export default function Grow() {
           <div className=" flex flex-col items-center justify-center md:max-w-6xl px-5 md:px-20 mx-auto gap-6">
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 text-[11px] md:text-[13px] font-medium text-primary w-fit">
               <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-              Reliable feed supply for livestock farmers
+              Reliable feed supply
             </div>
             <div className=" text-center ">
               <TextGenerateEffect words={words} />

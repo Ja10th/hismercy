@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2025";
 const COMPANY = "Mercy Agricultural Services";
-const EMAIL = "support@mercyagric.com";
+const EMAIL = "mercyagriculturalservicesltd@gmail.com";
 
 const sections = [
   { id: "acceptance", title: "Acceptance of terms" },
@@ -21,7 +21,7 @@ const sections = [
 export default function TermsPage() {
   return (
     <>
-      <Navbar />
+      <NavbarWrapper />
       <main className="min-h-screen bg-white">
 
         <div className="border-b border-neutral-100 bg-neutral-50 px-6 pt-32 md:pt-40 pb-20 text-center">

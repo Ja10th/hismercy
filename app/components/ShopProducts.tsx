@@ -38,7 +38,7 @@ export default function ShopProducts({ products }: ShopProductsProps) {
   const { addToCart } = useCart();
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-3 pb-3">
       {products.map((product) => {
         const imageUrl = product.images[0]?.url || "/bags.png";
         const priceLabel = formatNaira(product.price);

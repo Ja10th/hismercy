@@ -81,9 +81,7 @@ export default async function AdminSearchPage({
     <div className="space-y-6">
       <div className="rounded-3xl border border-neutral-200 bg-white p-6">
         <h1 className="text-2xl font-semibold text-neutral-950">Search results</h1>
-        <p className="mt-2 text-sm text-neutral-500">
-          Results for “{q}”
-        </p>
+        <p className="mt-2 text-sm text-neutral-500">Results for “{q}”</p>
       </div>
 
       <section className="rounded-3xl border border-neutral-200 bg-white p-6">
@@ -99,7 +97,7 @@ export default async function AdminSearchPage({
             products.map((product) => (
               <Link
                 key={product.id}
-                href={`/admin/products/${product.id}`}
+                href={`/admin/products?open=${product.id}&q=${encodeURIComponent(q)}`}
                 className="block rounded-2xl border border-neutral-200 px-4 py-3 transition hover:bg-neutral-50"
               >
                 <p className="font-medium text-neutral-950">{product.name}</p>

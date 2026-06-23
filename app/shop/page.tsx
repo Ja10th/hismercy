@@ -6,6 +6,8 @@ import ShopFilters from "../components/ShopFilters";
 import ShopPagination from "../components/ShopPagination";
 import { Package } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type ShopSearchParams = {
   q?: string;
   brand?: string;
@@ -44,6 +46,27 @@ function sortLabel(sort: string) {
   }
 }
 
+function buildQueryString(params: {
+  q?: string;
+  brand?: string;
+  sort?: string;
+  page?: number;
+}) {
+  const searchParams = new URLSearchParams();
+
+  if (params.q) searchParams.set("q", params.q);
+  if (params.brand) searchParams.set("brand", params.brand);
+  if (params.sort && params.sort !== "featured") {
+    searchParams.set("sort", params.sort);
+  }
+
+  if (params.page && params.page > 1) {
+    searchParams.set("page", String(params.page));
+  }
+
+  return searchParams.toString();
+}
+
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const resolvedSearchParams = await searchParams;
 
@@ -65,7 +88,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     1,
     Number.isFinite(Number(resolvedSearchParams.page))
       ? Number(resolvedSearchParams.page)
-      : 1
+      : 1,
   );
 
   const brands = await prisma.brand.findMany({
@@ -90,38 +113,26 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       ? { price: "asc" as const }
       : sort === "price_desc"
         ? { price: "desc" as const }
-        : [{ featured: "desc" as const }, { featuredOrder: "asc" as const }, { createdAt: "desc" as const }];
+        : [
+            { featured: "desc" as const },
+            { featuredOrder: "asc" as const },
+            { createdAt: "desc" as const },
+          ];
 
-  const [totalProducts, products] = await prisma.$transaction([
-    prisma.product.count({ where }),
-    prisma.product.findMany({
-      where,
-      include: {
-        brand: true,
-        images: true,
-      },
-      orderBy,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-  ]);
-
+  const totalProducts = await prisma.product.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalProducts / pageSize));
   const safePage = Math.min(page, totalPages);
 
-  const paginatedProducts =
-    safePage === page
-      ? products
-      : await prisma.product.findMany({
-          where,
-          include: {
-            brand: true,
-            images: true,
-          },
-          orderBy,
-          skip: (safePage - 1) * pageSize,
-          take: pageSize,
-        });
+  const paginatedProducts = await prisma.product.findMany({
+    where,
+    include: {
+      brand: true,
+      images: true,
+    },
+    orderBy,
+    skip: (safePage - 1) * pageSize,
+    take: pageSize,
+  });
 
   const typedProducts: ShopProduct[] = paginatedProducts.map((product) => ({
     id: product.id,
@@ -135,44 +146,55 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     images: product.images.map((image) => ({ url: image.url })),
   }));
 
-  const hasFilters = Boolean(q || brand || sort !== "featured");
-  const queryString = new URLSearchParams(
-    Object.entries({
-      ...(q ? { q } : {}),
-      ...(brand ? { brand } : {}),
-      ...(sort !== "featured" ? { sort } : {}),
-    })
-  ).toString();
+  const queryString = buildQueryString({
+    q,
+    brand,
+    sort,
+  });
 
   return (
     <>
       <Navbar />
+      <section className="relative overflow-hidden bg-emerald-950 pb-14 md:pb-28 pt-28 md:pt-36">
+        {/* Horizontal field lines */}
+        <div
+          className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-8 opacity-[0.07]"
+          aria-hidden
+        >
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-px w-full bg-emerald-400" />
+          ))}
+        </div>
 
-      <main className="bg-white pt-18">
-        <section className="py-8 sm:py-12 lg:py-16">
+        {/* Large faint background word */}
+        <div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
+          aria-hidden
+        >
+          <span className="select-none text-[24vw] md:text-[22vw]  font-black uppercase leading-none tracking-tighter text-emerald-900/20 ">
+            SHOP
+          </span>
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center md:px-10">
+          <h1 className="mt-6 text-[clamp(2.4rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-tight text-white">
+            Browse Shop
+          </h1>
+        </div>
+      </section>
+
+      <main className="bg-white pt-4">
+        <section>
           <div className="mx-auto max-w-7xl px-5 md:px-10">
-            <div className="flex flex-col items-center gap-1 sm:gap-4 sm:flex-row sm:justify-between">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-[13px] font-medium text-primary">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                Shop
-              </div>
-
-              <h1 className="text-center text-2xl font-normal tracking-tight text-neutral-950 sm:text-4xl">
-                Browse the full collection.
-              </h1>
-
-              <p className="text-center text-[16px] leading-7 text-neutral-500 sm:text-base">
-                Search products, filter by brand, and shop in naira.
-              </p>
-            </div>
-
-            <ShopFilters brands={brands} q={q} brand={brand} sort={sort} />
-
+          <ShopFilters brands={brands} q={q} brand={brand} sort={sort} />
             <div className="mt-8 mb-4 flex items-center justify-between gap-3">
               <p className="text-sm text-neutral-500">
                 Showing{" "}
                 <span className="font-medium text-neutral-900">
-                  {Math.min(pageSize, totalProducts - (safePage - 1) * pageSize)}
+                  {Math.min(
+                    pageSize,
+                    totalProducts - (safePage - 1) * pageSize,
+                  )}
                 </span>{" "}
                 of{" "}
                 <span className="font-medium text-neutral-900">

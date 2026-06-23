@@ -56,6 +56,7 @@ type ProductsPageProps = {
     sort?: string;
     view?: string;
     page?: string;
+    open?: string;
   }>;
 };
 
@@ -416,6 +417,111 @@ function ProductFields({
   );
 }
 
+function ProductEditorModal({
+  modalId,
+  product,
+  brands,
+  defaultChecked = false,
+}: {
+  modalId: string;
+  product: ProductItem;
+  brands: BrandOption[];
+  defaultChecked?: boolean;
+}) {
+  const imageUrl = product.images[0]?.url || "/bags.png";
+
+  return (
+    <div className="relative">
+      <input
+        id={modalId}
+        type="checkbox"
+        className="peer sr-only"
+        defaultChecked={defaultChecked}
+      />
+
+      <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
+        <label
+          htmlFor={modalId}
+          className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+        />
+
+        <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white">
+          <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-950">
+                Edit product
+              </h3>
+              <p className="mt-1 text-sm text-neutral-500">
+                Update the product details and save changes.
+              </p>
+            </div>
+
+            <label
+              htmlFor={modalId}
+              className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
+              aria-label="Close modal"
+            >
+              <X className="h-4 w-4" />
+            </label>
+          </div>
+
+          <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
+            <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
+              <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
+                <Image
+                  src={imageUrl}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-4"
+                />
+              </div>
+
+              <div className="mt-4 space-y-2">
+                <p className="text-base font-semibold text-neutral-950">
+                  {product.name}
+                </p>
+                <p className="text-sm text-neutral-500">
+                  {product.brand?.name || "No brand"}
+                </p>
+                <p className="text-sm text-neutral-500">
+                  {formatNaira(product.price)}
+                </p>
+                <p className="break-all text-xs text-neutral-400">
+                  {product.slug}
+                </p>
+              </div>
+            </div>
+
+            <form action={updateProduct} className="p-5 sm:p-6">
+              <input type="hidden" name="id" value={product.id} />
+              <ProductFields brands={brands} product={product} />
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-neutral-500">
+                  Existing images stay. New uploads will be added.
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <label
+                    htmlFor={modalId}
+                    className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
+                  >
+                    Cancel
+                  </label>
+
+                  <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AddProductModal({ brands }: { brands: BrandOption[] }) {
   const modalId = "add-product-modal";
 
@@ -612,89 +718,11 @@ function ProductCard({
         </div>
       </div>
 
-      <div className="relative">
-        <input id={editModalId} type="checkbox" className="peer sr-only" />
-
-        <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
-          <label
-            htmlFor={editModalId}
-            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
-          />
-
-          <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-950">
-                  Edit product
-                </h3>
-                <p className="mt-1 text-sm text-neutral-500">
-                  Update the product details and save changes.
-                </p>
-              </div>
-
-              <label
-                htmlFor={editModalId}
-                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
-                aria-label="Close modal"
-              >
-                <X className="h-4 w-4" />
-              </label>
-            </div>
-
-            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
-              <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
-                <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
-                  <Image
-                    src={imageUrl}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-
-                <div className="mt-4 space-y-2">
-                  <p className="text-base font-semibold text-neutral-950">
-                    {product.name}
-                  </p>
-                  <p className="text-sm text-neutral-500">
-                    {product.brand?.name || "No brand"}
-                  </p>
-                  <p className="text-sm text-neutral-500">
-                    {formatNaira(product.price)}
-                  </p>
-                  <p className="text-xs text-neutral-400 break-all">
-                    {product.slug}
-                  </p>
-                </div>
-              </div>
-
-              <form action={updateProduct} className="p-5 sm:p-6">
-                <input type="hidden" name="id" value={product.id} />
-                <ProductFields brands={brands} product={product} />
-
-                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-neutral-500">
-                    Existing images stay. New uploads will be added.
-                  </p>
-
-                  <div className="flex items-center gap-3">
-                    <label
-                      htmlFor={editModalId}
-                      className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
-                    >
-                      Cancel
-                    </label>
-
-                    <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProductEditorModal
+        modalId={editModalId}
+        product={product}
+        brands={brands}
+      />
     </div>
   );
 }
@@ -804,89 +832,11 @@ function ProductRow({
         </div>
       </div>
 
-      <div className="relative">
-        <input id={editModalId} type="checkbox" className="peer sr-only" />
-
-        <div className="fixed inset-0 z-50 hidden items-center justify-center p-4 peer-checked:flex">
-          <label
-            htmlFor={editModalId}
-            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
-          />
-
-          <div className="relative z-10 w-full max-w-5xl overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
-            <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-950">
-                  Edit product
-                </h3>
-                <p className="mt-1 text-sm text-neutral-500">
-                  Update the product details and save changes.
-                </p>
-              </div>
-
-              <label
-                htmlFor={editModalId}
-                className="inline-flex cursor-pointer items-center justify-center rounded-full border border-neutral-200 p-2 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
-                aria-label="Close modal"
-              >
-                <X className="h-4 w-4" />
-              </label>
-            </div>
-
-            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[320px_minmax(0,1fr)]">
-              <div className="border-b border-neutral-200 bg-neutral-50 p-5 lg:border-b-0 lg:border-r">
-                <div className="relative aspect-square overflow-hidden rounded-3xl bg-neutral-100">
-                  <Image
-                    src={imageUrl}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-4"
-                  />
-                </div>
-
-                <div className="mt-4 space-y-2">
-                  <p className="text-base font-semibold text-neutral-950">
-                    {product.name}
-                  </p>
-                  <p className="text-sm text-neutral-500">
-                    {product.brand?.name || "No brand"}
-                  </p>
-                  <p className="text-sm text-neutral-500">
-                    {formatNaira(product.price)}
-                  </p>
-                  <p className="text-xs text-neutral-400 break-all">
-                    {product.slug}
-                  </p>
-                </div>
-              </div>
-
-              <form action={updateProduct} className="p-5 sm:p-6">
-                <input type="hidden" name="id" value={product.id} />
-                <ProductFields brands={brands} product={product} />
-
-                <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-neutral-500">
-                    Existing images stay. New uploads will be added.
-                  </p>
-
-                  <div className="flex items-center gap-3">
-                    <label
-                      htmlFor={editModalId}
-                      className="inline-flex cursor-pointer items-center rounded-full border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-100"
-                    >
-                      Cancel
-                    </label>
-
-                    <button className="inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800">
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProductEditorModal
+        modalId={editModalId}
+        product={product}
+        brands={brands}
+      />
     </div>
   );
 }
@@ -904,6 +854,7 @@ export default async function ProductsPage({
     typeof params.sort === "string" ? params.sort.trim() : "featured";
   const view = params.view === "list" ? "list" : "grid";
   const page = Math.max(1, Number(params.page || "1") || 1);
+  const openId = typeof params.open === "string" ? params.open.trim() : "";
   const perPage = 6;
 
   const brands = await prisma.brand.findMany({
@@ -963,6 +914,16 @@ export default async function ProductsPage({
     take: perPage,
   });
 
+  const openProductRaw = openId
+    ? await prisma.product.findUnique({
+        where: { id: openId },
+        include: {
+          brand: true,
+          images: true,
+        },
+      })
+    : null;
+
   const typedBrands: BrandOption[] = brands.map((brand) => ({
     id: brand.id,
     name: brand.name,
@@ -993,11 +954,46 @@ export default async function ProductsPage({
     })),
   }));
 
+  const openProduct: ProductItem | null = openProductRaw
+    ? {
+        id: openProductRaw.id,
+        name: openProductRaw.name,
+        slug: openProductRaw.slug,
+        price: openProductRaw.price,
+        description: openProductRaw.description,
+        inStock: openProductRaw.inStock,
+        stockCount: openProductRaw.stockCount,
+        featured: openProductRaw.featured,
+        featuredOrder: openProductRaw.featuredOrder,
+        brandId: openProductRaw.brandId,
+        brand: openProductRaw.brand
+          ? {
+              id: openProductRaw.brand.id,
+              name: openProductRaw.brand.name,
+              slug: openProductRaw.brand.slug,
+            }
+          : null,
+        images: openProductRaw.images.map((image) => ({
+          id: image.id,
+          url: image.url,
+        })),
+      }
+    : null;
+
   const currentQuery = { q, brand, status, sort, view };
 
   return (
     <div className="min-h-screen bg-neutral-50 px-4 pt-9 pb-3 sm:px-6 lg:px-2">
       <div className="mx-auto max-w-400">
+        {openProduct ? (
+          <ProductEditorModal
+            modalId="search-open-product"
+            product={openProduct}
+            brands={typedBrands}
+            defaultChecked
+          />
+        ) : null}
+
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-neutral-950">

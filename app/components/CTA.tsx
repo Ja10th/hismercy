@@ -29,7 +29,7 @@ export default function CTA() {
           <div className="flex gap-4 flex-wrap">
             <Link
               href="/shop"
-              className="inline-flex items-center bg-primary hover:bg-primary-light text-white px-7 py-3.5 rounded-full text-[15px] font-medium transition-colors duration-200"
+              className="inline-flex items-center bg-emerald-700 hover:bg-emerald-800 text-white px-7 py-3.5 rounded-full text-[15px] font-medium transition-colors duration-200"
             >
               Shop Feed & Supplies
             </Link>

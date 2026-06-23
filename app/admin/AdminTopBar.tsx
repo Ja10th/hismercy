@@ -226,7 +226,7 @@ export function AdminTopBar() {
           ...data.products.map((item) => ({
             id: item.id,
             label: item.name,
-            href: `/admin/products/${item.id}`,
+            href: `/admin/products?open=${item.id}`,
             type: "product" as const,
             meta: item.slug,
           })),

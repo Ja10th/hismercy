@@ -62,7 +62,7 @@ export default function Footer() {
             <div className="flex flex-col gap-8 lg:items-start">
               <Link
                 href="/contact-us"
-                className="flex items-center gap-2.5 bg-green-600 text-white px-7 py-3.5 rounded-full font-bold text-[14px] tracking-wide hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
+                className="flex items-center gap-2.5 bg-emerald-700 hover:bg-emerald-800 text-white px-7 py-3.5 rounded-full font-bold text-[14px] tracking-wide hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
               >
                 <Image
                   src={assets.footerButtonIcon}
@@ -138,10 +138,10 @@ export default function Footer() {
             </p>
 
             <Link
-              href="mailto:hello@mercyagric.com"
+              href="mailto:mercyagriculturalservicesltd@gmail.com"
               className="text-[14px] font-medium text-white/70 hover:text-white transition-colors duration-200"
             >
-              hello@mercyagric.com
+              mercyagriculturalservicesltd@gmail.com
             </Link>
 
             <div className="flex gap-5">

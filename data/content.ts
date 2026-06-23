@@ -64,8 +64,8 @@ export interface FooterLinkGroup {
 export const navLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Consultation", href: "/consultation" },
   { label: "Shop", href: "/shop" },
+  { label: "Consultation", href: "/consultation" },
   { label: "Blog", href: "/blog" },
 ];
 
@@ -110,7 +110,7 @@ export const services: Service[] = [
     heading: "Poultry & Livestock Supplies",
     paragraph:
       "We provide a wide range of farm supplies, including poultry equipment and pig feed, to keep your operations running smoothly.",
-    image: `${CDN}/68dcb0e2904d68a10fb32484_Frame%202147226372%20(4).webp`,
+    image: `https://images.pexels.com/photos/27908188/pexels-photo-27908188.jpeg`,
     number: 3,
   },
   {

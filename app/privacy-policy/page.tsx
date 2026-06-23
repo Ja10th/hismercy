@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 
 const LAST_UPDATED = "1 June 2025";
 const COMPANY = "Mercy Agricultural Services";
-const EMAIL = "support@mercyagric.com";
+const EMAIL = "mercyagriculturalservicesltd@gmail.com";
 const ADDRESS = "Ado-Ekiti, Ekiti State, Nigeria";
 
 const sections = [

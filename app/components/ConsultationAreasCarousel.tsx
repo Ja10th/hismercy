@@ -40,8 +40,8 @@ const areas = [
 // Variation C — Tall image cards with bold number and overlay text
 export default function VariationC() {
   return (
-    <section className="border-t border-neutral-100 bg-emerald-800 px-8 py-20 md:py-28">
-      <div className="mx-auto max-w-7xl">
+    <section className="border-t border-neutral-100 bg-emerald-800  py-20 md:py-28">
+      <div className="mx-auto max-w-7xl px-8">
         {/* Header */}
         <div className="mb-12 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -55,7 +55,7 @@ export default function VariationC() {
         </div>
 
         {/* 4-column card strip */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
           {areas.map((area) => (
             <div
               key={area.number}
