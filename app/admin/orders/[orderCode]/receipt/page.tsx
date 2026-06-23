@@ -153,7 +153,7 @@ export default async function MyOrdersSearchPage({ searchParams }: PageProps) {
 
   return (
     <>
-      <NavbarWrapper />
+      <Navbar />
       <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.08),_transparent_34%),linear-gradient(to_bottom,_#f8fafc,_#f6f7fb_40%,_#f6f7fb)] px-4 pb-16 pt-24 sm:px-6 lg:px-8 lg:pt-32">
         <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
