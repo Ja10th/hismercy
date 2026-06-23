@@ -41,7 +41,7 @@ export default function Products({ products }: ProductsProps) {
 
   return (
     <section className="bg-white py-24">
-      <div className="mx-auto max-w-8xl px-5 md:px-10 lg:px-16 xl:px-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-8 ">
         <div className="mb-12 flex flex-wrap items-center justify-between gap-6">
           <div className="flex flex-col gap-4">
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-[13px] font-medium text-primary">

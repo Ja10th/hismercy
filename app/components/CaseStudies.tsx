@@ -20,7 +20,7 @@ export default function Consultation() {
     <section className="py-24 overflow-hidden">
 
       {/* HEADER (still centered) */}
-      <div className="max-w-8xl mx-auto px-5 md:px-40 mb-12 flex items-center justify-between flex-wrap gap-6">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 mb-12 flex items-center justify-between flex-wrap gap-6">
         <div className="flex flex-col gap-4 max-w-xl">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 text-[13px] font-medium text-primary w-fit">
             <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
@@ -52,7 +52,7 @@ export default function Consultation() {
       {/* FULL WIDTH SLIDER */}
       <div
         ref={scrollRef}
-        className="flex gap-6 overflow-x-auto px-8 md:px-12 lg:px-20 scroll-smooth"
+        className="flex gap-6 overflow-x-auto px-8 md:px-12 lg:px-50 scroll-smooth"
       >
         {consultations.map((item, i) => (
           <div

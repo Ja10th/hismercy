@@ -5,7 +5,7 @@ import { blogs, assets } from "@/data/content";
 export default function Blog() {
   return (
     <section className="py-24 bg-[#f2f0eb]">
-      <div className="max-w-[1280px] mx-auto px-8">
+      <div className="max-w-7xl mx-auto px-8">
 
         {/* Header */}
         <div className="flex items-end justify-between gap-6 mb-12 flex-wrap">
