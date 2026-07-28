@@ -234,9 +234,7 @@ export default function CustomOrderPage() {
           </span>
         </div>
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-          <span className="inline-block rounded-full border border-emerald-700/50 bg-emerald-900/40 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-400">
-            Custom Order
-          </span>
+       
           <h1 className="mt-5 text-[clamp(2.2rem,5.5vw,4.2rem)] font-extrabold leading-[1.05] tracking-tight text-white">
             Order exactly what you need
           </h1>
