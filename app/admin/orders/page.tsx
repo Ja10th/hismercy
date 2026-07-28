@@ -134,42 +134,47 @@ export default async function AdminOrdersPage({
   const page = Math.max(1, Number(params.page || "1") || 1);
   const perPage = 4;
 
-  const orders = await prisma.order.findMany({
+  // ── Build Prisma where clause (DB-level filtering, not in-memory) ──────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: any = {};
+
+  if (payment !== "all") {
+    where.paymentStatus = payment;
+  }
+
+  if (status !== "all") {
+    where.status = status;
+  }
+
+  if (q) {
+    where.OR = [
+      { orderCode: { contains: q, mode: "insensitive" } },
+      { fullName:   { contains: q, mode: "insensitive" } },
+      { email:      { contains: q, mode: "insensitive" } },
+      { phone:      { contains: q, mode: "insensitive" } },
+      { street:     { contains: q, mode: "insensitive" } },
+      { city:       { contains: q, mode: "insensitive" } },
+      { state:      { contains: q, mode: "insensitive" } },
+      { items: { some: { name: { contains: q, mode: "insensitive" } } } },
+    ];
+  }
+
+  // ── Count + paginate in the DB ─────────────────────────────────────────────
+  const totalCount = await prisma.order.count({ where });
+  const pageCount  = Math.max(1, Math.ceil(totalCount / perPage));
+  const currentPage = Math.min(page, pageCount);
+
+  const visibleOrders = await prisma.order.findMany({
+    where,
     include: {
       customer: true,
-      items: {
-        orderBy: { createdAt: "asc" },
-      },
-      history: {
-        orderBy: { createdAt: "asc" },
-      },
+      items:   { orderBy: { createdAt: "asc" } },
+      history: { orderBy: { createdAt: "asc" } },
     },
     orderBy: { createdAt: "desc" },
+    skip: (currentPage - 1) * perPage,
+    take: perPage,
   });
-
-  const filteredOrders = orders.filter((order) => {
-    const paymentOk = payment === "all" || order.paymentStatus === payment;
-    const statusOk = status === "all" || order.status === status;
-
-    const searchOk =
-      !q ||
-      filterMatches(order.orderCode, q) ||
-      filterMatches(order.fullName, q) ||
-      filterMatches(order.email, q) ||
-      filterMatches(order.phone, q) ||
-      filterMatches(order.street, q) ||
-      filterMatches(order.city, q) ||
-      filterMatches(order.state, q) ||
-      order.items.some((item) => filterMatches(item.name, q));
-
-    return paymentOk && statusOk && searchOk;
-  });
-
-  const totalCount = filteredOrders.length;
-  const pageCount = Math.max(1, Math.ceil(totalCount / perPage));
-  const currentPage = Math.min(page, pageCount);
-  const start = (currentPage - 1) * perPage;
-  const visibleOrders = filteredOrders.slice(start, start + perPage);
 
   const activeFilters = Boolean(q || payment !== "all" || status !== "all");
 

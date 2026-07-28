@@ -7,6 +7,7 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   Search,
   X,
 } from "lucide-react";
@@ -290,6 +291,13 @@ export default function ShopFilters({
             </div>
             {sortSelect}
             {clearBtn}
+            <Link
+              href="/custom-order"
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border border-emerald-600 bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700 whitespace-nowrap"
+            >
+              <ClipboardList className="h-4 w-4" />
+              Custom Order
+            </Link>
           </div>
 
           <div className="pt-4">{brandPills}</div>
@@ -322,6 +330,14 @@ export default function ShopFilters({
           {sortSelect}
           {clearBtn}
         </div>
+
+        <Link
+          href="/custom-order"
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-emerald-600 bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700"
+        >
+          <ClipboardList className="h-4 w-4" />
+          Custom Order
+        </Link>
 
         {brandPills}
       </div>

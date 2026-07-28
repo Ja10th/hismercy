@@ -39,7 +39,7 @@ export default function TermsPage() {
         <div className="mx-auto max-w-5xl px-6 py-14 lg:flex lg:gap-16">
 
           <aside className="hidden shrink-0 lg:block lg:w-52">
-            <nav className="sticky top-32">
+            <nav className="sticky top-32   ">
               <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-neutral-400">
                 Contents
               </p>

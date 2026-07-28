@@ -82,3 +82,8 @@ export type PaymentAuditLog = Prisma.PaymentAuditLogModel
  * 
  */
 export type AppSetting = Prisma.AppSettingModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { requireAdmin } from "@/lib/admin-auth";
 import AdminSidebar from "./AdminSidebar";
 import { AdminTopBar } from "./AdminTopBar";
+import { AdminProgressBar } from "./AdminProgressBar";
 import { Monitor } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -13,10 +14,16 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  await requireAdmin();
+  const session = await requireAdmin();
+  const role = session.user.role; // "admin" | "developer"
 
   return (
     <div className="min-h-screen bg-[#f6f7fb] text-neutral-900">
+      {/* Global navigation progress bar */}
+      <Suspense fallback={null}>
+        <AdminProgressBar />
+      </Suspense>
+
       <div className="flex min-h-screen">
         <div className="flex min-h-screen w-full items-center justify-center px-6 lg:hidden">
           <div className="max-w-sm rounded-3xl border border-neutral-200 bg-white p-8 text-center shadow-sm">
@@ -36,7 +43,7 @@ export default async function AdminLayout({
         </div>
 
         <div className="hidden w-full lg:flex">
-          <AdminSidebar />
+          <AdminSidebar role={role} />
 
           <main className="flex-1 lg:ml-[280px]">
             <AdminTopBar />

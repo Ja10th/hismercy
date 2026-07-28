@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import {
+  checkLoginRateLimit,
   createAdminSession,
   getCurrentAdminSession,
+  resetLoginRateLimit,
   verifyAdminCredentials,
 } from "@/lib/admin-auth";
 import { LoginButton } from "../components/LoginButton";
@@ -26,13 +29,37 @@ async function loginAction(formData: FormData) {
   const password = String(formData.get("password") || "");
   const nextPath = String(formData.get("next") || "/admin");
 
+  // Derive client IP from the request headers available inside Server Actions
+  const headersList = await headers();
+  const forwarded = headersList.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0].trim() : (headersList.get("x-real-ip") ?? "unknown");
+
+  // Rate-limit before touching the DB — stops brute-force and credential stuffing
+  if (checkLoginRateLimit(email, ip)) {
+    redirect(`/login?error=rate&next=${encodeURIComponent(nextPath)}`);
+  }
+
   const user = await verifyAdminCredentials(email, password);
 
   if (!user) {
     redirect(`/login?error=1&next=${encodeURIComponent(nextPath)}`);
   }
 
+  // Clear rate-limit bucket for this email on successful login
+  resetLoginRateLimit(email);
+
   await createAdminSession(user.id);
+
+  // Log the login event — fire-and-forget, don't block redirect
+  import("@/lib/audit").then(({ logAudit }) =>
+    logAudit({
+      category: "auth",
+      action: "Admin login",
+      target: user.email,
+      actor: user.name || user.email,
+      meta: { ip },
+    }),
+  );
 
   redirect(nextPath.startsWith("/admin") ? nextPath : "/admin");
 }
@@ -41,7 +68,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const session = await getCurrentAdminSession();
   if (session) redirect("/admin");
 
-  const error = searchParams?.error === "1";
+  const errorParam = searchParams?.error;
   const nextPath =
     typeof searchParams?.next === "string" ? searchParams.next : "/admin";
 
@@ -77,9 +104,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               Enter your admin credentials to continue.
             </p>
 
-            {error ? (
+            {errorParam === "1" ? (
               <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 Invalid email or password.
+              </div>
+            ) : errorParam === "rate" ? (
+              <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                Too many login attempts. Please wait 15 minutes and try again.
               </div>
             ) : null}
 

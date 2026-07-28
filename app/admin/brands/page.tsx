@@ -62,8 +62,16 @@ async function createBrand(formData: FormData) {
 
   const slug = await getUniqueBrandSlug(slugify(name));
 
-  await prisma.brand.create({
+  const brand = await prisma.brand.create({
     data: { name, slug },
+  });
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "brand",
+    action: "Created brand",
+    target: brand.name,
+    href: `/admin/brands/${brand.id}`,
   });
 
   revalidatePath("/admin/brands");
@@ -87,11 +95,16 @@ async function bulkCreateBrands(formData: FormData) {
 
   for (const name of names) {
     const slug = await getUniqueBrandSlug(slugify(name));
-
-    await prisma.brand.create({
-      data: { name, slug },
-    });
+    await prisma.brand.create({ data: { name, slug } });
   }
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "brand",
+    action: "Bulk created brands",
+    meta: { count: names.length, names },
+    href: "/admin/brands",
+  });
 
   revalidatePath("/admin/brands");
   redirect("/admin/brands");
@@ -103,8 +116,18 @@ async function deleteBrand(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
 
-  await prisma.brand.delete({
+  const brand = await prisma.brand.findUnique({
     where: { id },
+    select: { name: true },
+  });
+
+  await prisma.brand.delete({ where: { id } });
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "brand",
+    action: "Deleted brand",
+    target: brand?.name,
   });
 
   revalidatePath("/admin/brands");

@@ -63,7 +63,8 @@ export const ModelName = {
   BlogPost: 'BlogPost',
   AdminNotification: 'AdminNotification',
   PaymentAuditLog: 'PaymentAuditLog',
-  AppSetting: 'AppSetting'
+  AppSetting: 'AppSetting',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -282,6 +283,20 @@ export const AppSettingScalarFieldEnum = {
 export type AppSettingScalarFieldEnum = (typeof AppSettingScalarFieldEnum)[keyof typeof AppSettingScalarFieldEnum]
 
 
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  actor: 'actor',
+  category: 'category',
+  action: 'action',
+  target: 'target',
+  href: 'href',
+  meta: 'meta',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -295,6 +310,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

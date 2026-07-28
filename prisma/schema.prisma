@@ -220,3 +220,24 @@ model AppSetting {
 
   @@index([category])
 }
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  // Who performed the action (admin email/name, or "system")
+  actor      String
+  // Category: order | product | brand | blog | customer | settings | auth | payment | system
+  category   String
+  // Human-readable past-tense action: "Updated order status", "Deleted product", etc.
+  action     String
+  // The entity being acted on (order code, product name, etc.)
+  target     String?
+  // Optional link back to the entity in the admin
+  href       String?
+  // JSON snapshot of changed fields or relevant metadata
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([category])
+  @@index([actor])
+  @@index([createdAt])
+}

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
+import { logAudit } from "@/lib/audit";
 
 export async function deleteCustomer(formData: FormData) {
   await requireAdmin();
@@ -10,8 +11,18 @@ export async function deleteCustomer(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
 
-  await prisma.customer.delete({
+  const customer = await prisma.customer.findUnique({
     where: { id },
+    select: { fullName: true, email: true },
+  });
+
+  await prisma.customer.delete({ where: { id } });
+
+  await logAudit({
+    category: "customer",
+    action: "Deleted customer",
+    target: customer?.fullName,
+    meta: { email: customer?.email },
   });
 
   revalidatePath("/admin/customers");
@@ -31,8 +42,13 @@ export async function bulkDeleteCustomers(formData: FormData) {
 
   if (!Array.isArray(ids) || ids.length === 0) return;
 
-  await prisma.customer.deleteMany({
-    where: { id: { in: ids } },
+  await prisma.customer.deleteMany({ where: { id: { in: ids } } });
+
+  await logAudit({
+    category: "customer",
+    action: "Bulk deleted customers",
+    meta: { count: ids.length },
+    href: "/admin/customers",
   });
 
   revalidatePath("/admin/customers");

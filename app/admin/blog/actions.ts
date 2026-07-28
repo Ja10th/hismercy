@@ -109,6 +109,8 @@ async function createAdminNotification(input: {
   });
 }
 
+import { logAudit } from "@/lib/audit";
+
 async function upsertBlogPost(formData: FormData, forcedStatus?: "published") {
   await requireAdmin();
 
@@ -175,6 +177,14 @@ async function upsertBlogPost(formData: FormData, forcedStatus?: "published") {
       href: `/admin/blog/${updated.id}/edit`,
     });
 
+    await logAudit({
+      category: "blog",
+      action: nextStatus === "published" ? "Published blog post" : "Updated blog post",
+      target: updated.title,
+      href: `/admin/blog/${updated.id}/edit`,
+      meta: { status: nextStatus, from: existing?.status },
+    });
+
     revalidatePath("/admin/blog");
     revalidatePath("/blog");
     revalidatePath(`/admin/blog/${updated.id}/edit`);
@@ -205,6 +215,14 @@ async function upsertBlogPost(formData: FormData, forcedStatus?: "published") {
         : "Blog draft created",
     description: created.title,
     href: `/admin/blog/${created.id}/edit`,
+  });
+
+  await logAudit({
+    category: "blog",
+    action: nextStatus === "published" ? "Published blog post" : "Created blog draft",
+    target: created.title,
+    href: `/admin/blog/${created.id}/edit`,
+    meta: { status: nextStatus },
   });
 
   revalidatePath("/admin/blog");
@@ -242,6 +260,13 @@ export async function deleteBlogPost(formData: FormData) {
     type: "blog",
     title: "Blog post deleted",
     description: post?.title || "A blog post was deleted",
+    href: "/admin/blog",
+  });
+
+  await logAudit({
+    category: "blog",
+    action: "Deleted blog post",
+    target: post?.title,
     href: "/admin/blog",
   });
 

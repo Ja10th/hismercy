@@ -356,3 +356,139 @@ export async function sendAdminOrderEmail(input: {
 
   return info;
 }
+
+// ─── Custom Order Email ───────────────────────────────────────────────────────
+
+function customOrderEmailHtml(input: {
+  fullName: string;
+  email: string;
+  phone: string;
+  productType: string;
+  quantity: string;
+  deliveryLocation: string;
+  message: string;
+}) {
+  const safe = {
+    fullName: escapeHtml(input.fullName),
+    email: escapeHtml(input.email),
+    phone: escapeHtml(input.phone),
+    productType: escapeHtml(input.productType),
+    quantity: escapeHtml(input.quantity),
+    deliveryLocation: escapeHtml(input.deliveryLocation),
+    message: escapeHtml(input.message),
+  };
+
+  const row = (label: string, value: string) => `
+    <tr>
+      <td style="padding:14px 20px;width:38%;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;vertical-align:top;border-bottom:1px solid #e2e8f0;">${label}</td>
+      <td style="padding:14px 20px;font-family:Arial,sans-serif;font-size:15px;color:#0f172a;vertical-align:top;border-bottom:1px solid #e2e8f0;">${value}</td>
+    </tr>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>New Custom Order Request</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f2f4;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f0f2f4;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #cbd5e1;">
+          <!-- Header -->
+          <tr>
+            <td style="background:#0f172a;padding:0;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="6" style="background:#10b981;">&nbsp;</td>
+                  <td style="padding:28px 32px 26px;">
+                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#10b981;">Admin Notification</p>
+                    <h1 style="margin:10px 0 0;font-family:Georgia,'Times New Roman',serif;font-size:28px;font-weight:400;color:#ffffff;line-height:1.15;">New Custom Order Request</h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Rule -->
+          <tr><td style="background:#10b981;height:2px;font-size:0;line-height:0;">&nbsp;</td></tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 0;">
+              <p style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:15px;line-height:1.75;color:#334155;">
+                A customer has submitted a custom order request. Review the details below and follow up directly.
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border:1px solid #cbd5e1;margin-bottom:36px;">
+                <tr>
+                  <td colspan="2" style="background:#f8fafc;padding:12px 20px;border-bottom:1px solid #cbd5e1;">
+                    <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#64748b;">Customer &amp; Order Details</p>
+                  </td>
+                </tr>
+                ${row("Full Name", safe.fullName)}
+                ${row("Email", `<a href="mailto:${safe.email}" style="color:#0f172a;text-decoration:underline;">${safe.email}</a>`)}
+                ${row("Phone", safe.phone)}
+                ${row("Product / Feed Type", safe.productType)}
+                ${row("Quantity / Volume", safe.quantity)}
+                ${row("Delivery Location", safe.deliveryLocation)}
+                <tr>
+                  <td style="padding:14px 20px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;vertical-align:top;">Additional Notes</td>
+                  <td style="padding:14px 20px;font-family:Arial,sans-serif;font-size:15px;color:#0f172a;vertical-align:top;white-space:pre-line;">${safe.message || "—"}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f8fafc;border-top:1px solid #cbd5e1;padding:20px 32px;">
+              <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;line-height:1.6;color:#94a3b8;">
+                Sent automatically by Mercy Agricultural Services order system.<br />
+                Reply directly to the customer's email to follow up.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendCustomOrderEmail(input: {
+  fullName: string;
+  email: string;
+  phone: string;
+  productType: string;
+  quantity: string;
+  deliveryLocation: string;
+  message: string;
+}) {
+  const adminEmail = process.env.ADMIN_ORDER_EMAIL;
+  if (!adminEmail) throw new Error("ADMIN_ORDER_EMAIL is missing");
+
+  const from = process.env.MAIL_FROM || process.env.GMAIL_USER;
+  if (!from) throw new Error("MAIL_FROM or GMAIL_USER is missing");
+
+  console.log("[email] sending custom order email", {
+    to: adminEmail,
+    from,
+    customerEmail: input.email,
+  });
+
+  const info = await transporter.sendMail({
+    from,
+    to: adminEmail,
+    replyTo: input.email,
+    subject: `Custom order request — ${input.fullName}`,
+    html: customOrderEmailHtml(input),
+  });
+
+  console.log("[email] custom order email sent", {
+    messageId: info.messageId,
+    accepted: info.accepted,
+    rejected: info.rejected,
+  });
+
+  return info;
+}

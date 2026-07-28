@@ -10,6 +10,7 @@ import { slugify } from "@/lib/slugify";
 import {
   ChevronDown,
   CircleHelp,
+  ClipboardList,
   Minus,
   Plus,
   Store,
@@ -152,12 +153,23 @@ function ShopDropdown({ brands }: { brands: Brand[] }) {
         <Link
           role="menuitem"
           href="/shop"
-          className={`${ITEM_CLASS} border-b border-white/8 font-medium text-white`}
+          className={`${ITEM_CLASS} font-medium text-white`}
         >
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-700/30 text-emerald-400">
             <Store className="h-3.5 w-3.5" />
           </span>
           All Products
+        </Link>
+
+        <Link
+          role="menuitem"
+          href="/custom-order"
+          className={`${ITEM_CLASS} border-b border-white/8 font-medium text-emerald-400`}
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-700/30 text-emerald-400">
+            <ClipboardList className="h-3.5 w-3.5" />
+          </span>
+          Custom Order
         </Link>
 
         <p className="px-4 pb-1 pt-3 text-[10px] uppercase tracking-[0.18em] text-white/35">
@@ -583,6 +595,15 @@ export default function Navbar() {
                           >
                             <Store className="h-4 w-4 text-emerald-400" />
                             All Products
+                          </Link>
+
+                          <Link
+                            href="/custom-order"
+                            onClick={() => setMenuOpen(false)}
+                            className={`${MOBILE_ITEM_CLASS} text-emerald-400`}
+                          >
+                            <ClipboardList className="h-4 w-4 text-emerald-400" />
+                            Custom Order
                           </Link>
 
                           <p className="px-3 pb-1 pt-3 text-[10px] uppercase tracking-[0.18em] text-white/40">

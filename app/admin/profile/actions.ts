@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin, logoutAdmin } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { logAudit } from "@/lib/audit";
 
 const profileSchema = z.object({
   name: z.string().trim().min(2, "Name is required").max(100),
@@ -51,12 +52,22 @@ export async function updateAdminProfile(formData: FormData) {
     throw new Error("That email is already in use");
   }
 
+  const before = { email: admin.email, name: admin.name };
+
   await prisma.adminUser.update({
     where: { id: admin.id },
     data: {
       name: data.name,
       email: nextEmail,
     },
+  });
+
+  await logAudit({
+    category: "auth",
+    action: "Updated profile",
+    target: admin.email,
+    href: "/admin/profile",
+    meta: { before, after: { email: nextEmail, name: data.name } },
   });
 
   revalidatePath("/admin/profile");
@@ -102,6 +113,13 @@ export async function updateAdminPassword(formData: FormData) {
 
   await prisma.adminSession.deleteMany({
     where: { userId: admin.id },
+  });
+
+  await logAudit({
+    category: "auth",
+    action: "Changed password",
+    target: admin.email,
+    meta: { allSessionsInvalidated: true },
   });
 
   await logoutAdmin();

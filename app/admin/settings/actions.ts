@@ -8,6 +8,7 @@ import {
   upsertAppSetting,
   type AppSettings,
 } from "@/lib/settings";
+import { logAudit } from "@/lib/audit";
 
 function getString(formData: FormData, key: string, fallback = "") {
   const value = formData.get(key);
@@ -43,6 +44,7 @@ export async function saveGeneralSettings(formData: FormData) {
   };
 
   await upsertAppSetting("general", value);
+  await logAudit({ category: "settings", action: "Updated general settings", href: "/admin/settings" });
   refreshAll();
   redirect("/admin/settings?saved=general");
 }
@@ -58,6 +60,7 @@ export async function saveContactSettings(formData: FormData) {
   };
 
   await upsertAppSetting("contact", value);
+  await logAudit({ category: "settings", action: "Updated contact settings", href: "/admin/settings" });
   refreshAll();
   redirect("/admin/settings?saved=contact");
 }
@@ -104,6 +107,7 @@ export async function saveDeliverySettings(formData: FormData) {
   };
 
   await upsertAppSetting("delivery", value);
+  await logAudit({ category: "settings", action: "Updated delivery settings", href: "/admin/settings" });
   refreshAll();
   redirect("/admin/settings?saved=delivery");
 }

@@ -4,12 +4,19 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin-auth";
 import { revalidatePath } from "next/cache";
 
-const statusLabels: Record<string, string> = {
+const VALID_STATUSES = ["pending", "on_the_way", "delivered", "completed"] as const;
+type OrderStatus = (typeof VALID_STATUSES)[number];
+
+const statusLabels: Record<OrderStatus, string> = {
   pending: "Pending",
   on_the_way: "On the way",
   delivered: "Delivered",
   completed: "Completed",
 };
+
+function isValidStatus(value: string): value is OrderStatus {
+  return (VALID_STATUSES as readonly string[]).includes(value);
+}
 
 export async function PATCH(
   req: NextRequest,
@@ -43,6 +50,13 @@ export async function PATCH(
       );
     }
 
+    if (!isValidStatus(status)) {
+      return NextResponse.json(
+        { ok: false, message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}` },
+        { status: 400 },
+      );
+    }
+
     const order = await prisma.order.findUnique({
       where: { orderCode },
       select: { id: true },
@@ -65,7 +79,7 @@ export async function PATCH(
         data: {
           orderId: order.id,
           status,
-          note: `Status changed to ${statusLabels[status] || status}`,
+          note: `Status changed to ${statusLabels[status]}`,
         },
       });
     });

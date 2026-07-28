@@ -205,47 +205,35 @@ async function createProduct(formData: FormData) {
   const description = String(formData.get("description") || "").trim();
   const brandId = String(formData.get("brandId") || "");
   const priceInput = String(formData.get("price") || "0").trim();
-
   const stockCount = Number(formData.get("stockCount") || 0);
   const inStock = formData.get("inStock") === "on";
   const featured = formData.get("featured") === "on";
   const featuredOrder = Number(formData.get("featuredOrder") || 999);
 
   if (!name) return;
-
   const price = Math.round(Number(priceInput) * 100);
   if (!Number.isFinite(price)) return;
 
   const slug = await resolveProductSlug(name, brandId);
-
-  const files = formData
-    .getAll("images")
-    .filter((value): value is File => value instanceof File && value.size > 0);
-
+  const files = formData.getAll("images").filter((v): v is File => v instanceof File && v.size > 0);
   const uploadedUrls = await saveUploadedImagesToDisk(files);
 
   const product = await prisma.product.create({
-    data: {
-      name,
-      slug,
-      price,
-      description: description || null,
-      brandId: brandId || null,
-      stockCount,
-      inStock,
-      featured,
-      featuredOrder,
-    },
+    data: { name, slug, price, description: description || null, brandId: brandId || null, stockCount, inStock, featured, featuredOrder },
   });
 
   for (const url of uploadedUrls) {
-    await prisma.productImage.create({
-      data: {
-        url,
-        productId: product.id,
-      },
-    });
+    await prisma.productImage.create({ data: { url, productId: product.id } });
   }
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "product",
+    action: "Created product",
+    target: product.name,
+    href: `/admin/products?open=${product.id}`,
+    meta: { price, inStock, featured },
+  });
 
   revalidatePath("/admin/products");
   revalidatePath("/");
@@ -260,14 +248,12 @@ async function updateProduct(formData: FormData) {
   const description = String(formData.get("description") || "").trim();
   const brandId = String(formData.get("brandId") || "");
   const priceInput = String(formData.get("price") || "0").trim();
-
   const stockCount = Number(formData.get("stockCount") || 0);
   const inStock = formData.get("inStock") === "on";
   const featured = formData.get("featured") === "on";
   const featuredOrder = Number(formData.get("featuredOrder") || 999);
 
   if (!id || !name) return;
-
   const price = Math.round(Number(priceInput) * 100);
   if (!Number.isFinite(price)) return;
 
@@ -275,35 +261,25 @@ async function updateProduct(formData: FormData) {
 
   await prisma.product.update({
     where: { id },
-    data: {
-      name,
-      slug,
-      price,
-      description: description || null,
-      brandId: brandId || null,
-      stockCount,
-      inStock,
-      featured,
-      featuredOrder,
-    },
+    data: { name, slug, price, description: description || null, brandId: brandId || null, stockCount, inStock, featured, featuredOrder },
   });
 
-  const files = formData
-    .getAll("images")
-    .filter((value): value is File => value instanceof File && value.size > 0);
-
+  const files = formData.getAll("images").filter((v): v is File => v instanceof File && v.size > 0);
   if (files.length > 0) {
     const uploadedUrls = await saveUploadedImagesToDisk(files);
-
     for (const url of uploadedUrls) {
-      await prisma.productImage.create({
-        data: {
-          url,
-          productId: id,
-        },
-      });
+      await prisma.productImage.create({ data: { url, productId: id } });
     }
   }
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "product",
+    action: "Updated product",
+    target: name,
+    href: `/admin/products?open=${id}`,
+    meta: { price, inStock, featured, stockCount },
+  });
 
   revalidatePath("/admin/products");
   revalidatePath("/");
@@ -316,8 +292,18 @@ async function deleteProduct(formData: FormData) {
   const id = String(formData.get("id") || "");
   if (!id) return;
 
-  await prisma.product.delete({
+  const product = await prisma.product.findUnique({
     where: { id },
+    select: { name: true },
+  });
+
+  await prisma.product.delete({ where: { id } });
+
+  const { logAudit } = await import("@/lib/audit");
+  await logAudit({
+    category: "product",
+    action: "Deleted product",
+    target: product?.name,
   });
 
   revalidatePath("/admin/products");
